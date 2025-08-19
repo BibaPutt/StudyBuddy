@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Sessions - StudyBuddy</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="my-sessions.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-book-open book-icon"></i>
+                <span class="logo-text">StudyBuddy</span>
+            </a>
+            <div class="nav-items">
+                <div class="nav-item dropdown">
+                    <span class="nav-link">Learner <i class="fas fa-chevron-down"></i></span>
+                    <div class="dropdown-menu">
+                        <a href="index.html" class="dropdown-item">Browse Mentors</a>
+                        <a href="my-sessions.html" class="dropdown-item">My Sessions</a>
+                    </div>
+                </div>
+                <div class="nav-item dropdown">
+                    <span class="nav-link">Tutor <i class="fas fa-chevron-down"></i></span>
+                    <div class="dropdown-menu">
+                        <a href="onboarding.html" class="dropdown-item">Become Mentor</a>
+                        <a href="dashboard.html" class="dropdown-item">My Dashboard</a>
+                    </div>
+                </div>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+                <a href="#" class="nav-link">About Us</a>
+            </div>
+            <div class="nav-right">
+                <div class="coins-display" id="coinsDisplay">
+                    <i class="fas fa-coins coin-icon"></i>
+                    <span class="coin-balance">1,250</span>
+                    <div class="sparkle"></div>
+                </div>
+                <button class="join-btn" id="join-btn">Join StudyBuddy</button>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+         <div class="mobile-nav" id="mobileNav">
+            <div class="mobile-nav-header">
+                <div class="mobile-coins">
+                    <i class="fas fa-coins"></i>
+                    <span>1,250 Coins</span>
+                </div>
+                <button class="close-mobile-menu" id="closeMobileMenu"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="mobile-nav-items">
+                <a href="index.html" class="mobile-nav-item">Browse Mentors</a>
+                <a href="my-sessions.html" class="mobile-nav-item">My Sessions</a>
+                <a href="onboarding.html" class="mobile-nav-item">Become Mentor</a>
+                <a href="dashboard.html" class="mobile-nav-item">My Dashboard</a>
+                <a href="pricing.html" class="mobile-nav-item">Pricing</a>
+                <a href="#" class="mobile-nav-item">About Us</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="sessions-header">
+            <h1>My Sessions</h1>
+            <p>Manage your upcoming and past learning sessions.</p>
+        </div>
+
+        <div class="sessions-container">
+            <div class="sessions-tabs">
+                <button class="tab-link active" data-tab="upcoming">
+                    <i class="fas fa-calendar-day"></i> Upcoming
+                </button>
+                <button class="tab-link" data-tab="past">
+                    <i class="fas fa-history"></i> Past
+                </button>
+            </div>
+
+            <div class="sessions-content" id="sessions-list">
+                <!-- Session cards will be dynamically inserted here by my-sessions.js -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Generic Modal for confirmations -->
+    <div class="modal-overlay" id="confirmation-modal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 id="modal-title">Confirm Action</h2>
+                <button class="close-modal-btn" id="close-modal-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <p>Are you sure you want to proceed?</p>
+            </div>
+            <div class="modal-footer" id="modal-footer">
+                <button class="secondary-btn" id="modal-cancel-btn">Cancel</button>
+                <button class="primary-cta danger" id="modal-confirm-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Modal -->
+    <div class="auth-modal-overlay is-hidden" id="auth-modal-overlay">
+        <div class="auth-modal-container">
+            <button class="auth-modal-close-btn" id="auth-modal-close-btn"><i class="fas fa-times"></i></button>
+            <div class="auth-modal-tabs">
+                <button class="auth-tab-btn active" data-tab="login">Login</button>
+                <button class="auth-tab-btn" data-tab="signup">Sign Up</button>
+            </div>
+            <div class="auth-modal-body active" id="login-body">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required>
+                        <p class="error-message"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="login-password" required>
+                            <i class="fas fa-eye-slash toggle-password"></i>
+                        </div>
+                        <p class="error-message"></p>
+                    </div>
+                    <a href="#" class="forgot-password-link">Forgot Password?</a>
+                    <button type="submit" class="auth-btn primary-btn">Login</button>
+                    <div class="social-login-divider"><span>OR</span></div>
+                    <button type="button" class="auth-btn social-btn" id="google-login-btn">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google logo">
+                        Continue with Google
+                    </button>
+                </form>
+            </div>
+            <div class="auth-modal-body" id="signup-body">
+                <form id="signup-form">
+                    <div class="signup-step active" data-step="1">
+                        <h3>Create your account</h3>
+                        <div class="form-group"><label for="signup-name">Full Name</label><input type="text" id="signup-name" required><p class="error-message"></p></div>
+                        <div class="form-group"><label for="signup-email">Email</label><input type="email" id="signup-email" required><p class="error-message"></p></div>
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <div class="password-wrapper"><input type="password" id="signup-password" required><i class="fas fa-eye-slash toggle-password"></i></div>
+                            <div class="password-strength-meter"><div class="strength-bar"></div><p class="strength-text"></p></div>
+                            <ul class="password-criteria">
+                                <li data-criterion="length">Minimum 8 characters</li>
+                                <li data-criterion="capital">At least one capital letter</li>
+                                <li data-criterion="symbol">At least one symbol</li>
+                            </ul>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-confirm-password">Confirm Password</label>
+                            <div class="password-wrapper"><input type="password" id="signup-confirm-password" required><i class="fas fa-eye-slash toggle-password"></i></div>
+                            <p class="error-message"></p>
+                        </div>
+                        <div class="form-group terms"><input type="checkbox" id="signup-terms" required><label for="signup-terms">I agree to the <a href="#">Terms & Conditions</a></label></div>
+                        <button type="button" class="auth-btn primary-btn" id="signup-next-btn">Next</button>
+                    </div>
+                    <div class="signup-step" data-step="2">
+                        <h3>Set up your profile</h3>
+                        <div class="form-group"><label for="signup-username">Username</label><input type="text" id="signup-username" required><p class="error-message"></p></div>
+                        <div class="form-group"><label for="signup-bio">Short Bio</label><textarea id="signup-bio" rows="3" placeholder="Tell us a bit about yourself..."></textarea></div>
+                        <div class="form-group-row"><button type="button" class="auth-btn secondary-btn" id="signup-back-btn">Back</button><button type="submit" class="auth-btn primary-btn">Create Account</button></div>
+                    </div>
+                    <div class="signup-step success-step" data-step="3">
+                        <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+                        <h3>Welcome, <span id="success-username"></span>!</h3>
+                        <p>Your account has been created successfully.</p>
+                        <a href="dashboard.html" class="auth-btn primary-btn">Go to Dashboard</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+    <script type="module" src="my-sessions.js"></script>
+</body>
+</html>

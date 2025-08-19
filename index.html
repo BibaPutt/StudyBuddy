@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyBuddy - Find Your Perfect Mentor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Decorative Elements -->
+    <div class="brush-stroke top-right"></div>
+    <div class="brush-stroke bottom-left"></div>
+    
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-book-open book-icon"></i>
+                <span class="logo-text">StudyBuddy</span>
+            </a>
+            <div class="nav-items">
+                <div class="nav-item dropdown">
+                    <span class="nav-link">Learner <i class="fas fa-chevron-down"></i></span>
+                    <div class="dropdown-menu">
+                        <a href="index.html" class="dropdown-item">Browse Mentors</a>
+                        <a href="my-sessions.html" class="dropdown-item">My Sessions</a>
+                    </div>
+                </div>
+                <div class="nav-item dropdown">
+                    <span class="nav-link">Tutor <i class="fas fa-chevron-down"></i></span>
+                    <div class="dropdown-menu">
+                        <a href="onboarding.html" class="dropdown-item">Become Mentor</a>
+                        <a href="dashboard.html" class="dropdown-item">My Dashboard</a>
+                    </div>
+                </div>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+                <a href="#" class="nav-link">About Us</a>
+            </div>
+            <div class="nav-right">
+                <div class="coins-display" id="coinsDisplay">
+                    <i class="fas fa-coins coin-icon"></i>
+                    <span class="coin-balance">1,250</span>
+                    <div class="sparkle"></div>
+                </div>
+                <button class="join-btn" id="join-btn">Join StudyBuddy</button>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <div class="mobile-nav" id="mobileNav">
+            <div class="mobile-nav-header">
+                <div class="mobile-coins">
+                    <i class="fas fa-coins"></i>
+                    <span>1,250 Coins</span>
+                </div>
+                <button class="close-mobile-menu" id="closeMobileMenu"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="mobile-nav-items">
+                <a href="index.html" class="mobile-nav-item">Browse Mentors</a>
+                <a href="my-sessions.html" class="mobile-nav-item">My Sessions</a>
+                <a href="onboarding.html" class="mobile-nav-item">Become Mentor</a>
+                <a href="dashboard.html" class="mobile-nav-item">My Dashboard</a>
+                <a href="pricing.html" class="mobile-nav-item">Pricing</a>
+                <a href="#" class="mobile-nav-item">About Us</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="index.html" class="breadcrumb-item">Home</a>
+            <i class="fas fa-chevron-right"></i>
+            <span class="breadcrumb-item active">Find Mentors</span>
+        </div>
+
+        <div class="page-container">
+            <!-- Filter Sidebar -->
+            <aside class="filter-sidebar" id="filterSidebar">
+                <div class="sidebar-header">
+                    <h3>Filters</h3>
+                    <button class="clear-filters" id="clearFilters">Clear All</button>
+                </div>
+
+                <!-- Price Range Filter -->
+                <div class="filter-section">
+                    <h4>Price Range</h4>
+                    <div class="price-range">
+                        <div class="price-inputs">
+                            <input type="number" id="minPrice" placeholder="50" min="50" max="2000">
+                            <span>-</span>
+                            <input type="number" id="maxPrice" placeholder="2000" min="50" max="2000">
+                        </div>
+                        <div class="price-slider">
+                            <input type="range" id="priceSlider" min="50" max="2000" value="2000">
+                        </div>
+                        <div class="coin-equivalent">
+                            <small>Prices in Coins</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Language Filter -->
+                <div class="filter-section">
+                    <h4>Languages</h4>
+                    <div class="language-filters">
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="hindi">
+                            <span class="flag">🇮🇳</span>
+                            <span>Hindi</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="english" checked>
+                            <span class="flag">🇺🇸</span>
+                            <span>English</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="marathi">
+                            <span class="flag">🇮🇳</span>
+                            <span>Marathi</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="tamil">
+                            <span class="flag">🇮🇳</span>
+                            <span>Tamil</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="telugu">
+                            <span class="flag">🇮🇳</span>
+                            <span>Telugu</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="bengali">
+                            <span class="flag">🇮🇳</span>
+                            <span>Bengali</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="gujarati">
+                            <span class="flag">🇮🇳</span>
+                            <span>Gujarati</span>
+                        </label>
+                        <div class="select-all">
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="selectAllLanguages">
+                                <span>Select All</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subject Categories -->
+                <div class="filter-section">
+                    <h4>Subjects</h4>
+                    <div class="subject-categories">
+                        <div class="category-item">
+                            <div class="category-header">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="programming">
+                                    <span>Programming</span>
+                                </label>
+                                <span class="mentor-count">(45)</span>
+                                <button class="expand-btn" data-category="programming">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            <div class="subcategories" id="programming-sub">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="python">
+                                    <span>Python</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="javascript">
+                                    <span>JavaScript</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="java">
+                                    <span>Java</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="category-item">
+                            <div class="category-header">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="mathematics">
+                                    <span>Mathematics</span>
+                                </label>
+                                <span class="mentor-count">(32)</span>
+                                <button class="expand-btn" data-category="mathematics">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            <div class="subcategories" id="mathematics-sub">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="algebra">
+                                    <span>Algebra</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="calculus">
+                                    <span>Calculus</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="geometry">
+                                    <span>Geometry</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="category-item">
+                            <div class="category-header">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="science">
+                                    <span>Science</span>
+                                </label>
+                                <span class="mentor-count">(28)</span>
+                                <button class="expand-btn" data-category="science">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            <div class="subcategories" id="science-sub">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="physics">
+                                    <span>Physics</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="chemistry">
+                                    <span>Chemistry</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="biology">
+                                    <span>Biology</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="category-item">
+                            <div class="category-header">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="languages">
+                                    <span>Languages</span>
+                                </label>
+                                <span class="mentor-count">(24)</span>
+                                <button class="expand-btn" data-category="languages">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            <div class="subcategories" id="languages-sub">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="english">
+                                    <span>English</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="spanish">
+                                    <span>Spanish</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="french">
+                                    <span>French</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Availability Filter -->
+                <div class="filter-section">
+                    <h4>Availability</h4>
+                    <div class="availability-filters">
+                        <button class="availability-btn active">Available Today</button>
+                        <button class="availability-btn">This Week</button>
+                        <button class="availability-btn">Weekends Only</button>
+                    </div>
+                    <div class="time-slots">
+                        <h5>Time Slots</h5>
+                        <div class="time-slot-buttons">
+                            <button class="time-slot-btn">Morning</button>
+                            <button class="time-slot-btn active">Afternoon</button>
+                            <button class="time-slot-btn">Evening</button>
+                            <button class="time-slot-btn">Night</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Session Type -->
+                <div class="filter-section">
+                    <h4>Session Type</h4>
+                    <div class="session-type">
+                        <label class="radio-item">
+                            <input type="radio" name="sessionType" value="1on1" checked>
+                            <span>1-on-1 Sessions</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="sessionType" value="group">
+                            <span>Group Sessions</span>
+                        </label>
+                    </div>
+                    <div class="group-size" id="groupSize" style="display: none;">
+                        <h5>Group Size</h5>
+                        <div class="group-size-buttons">
+                            <button class="group-size-btn">2-5</button>
+                            <button class="group-size-btn">6-10</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mentor Features -->
+                <div class="filter-section">
+                    <h4>Features</h4>
+                    <div class="mentor-features">
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="screenShare">
+                            <span>Screen Share</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="homeworkHelp">
+                            <span>Homework Help</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="interviewPrep">
+                            <span>Interview Prep</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="examFocused">
+                            <span>Exam Focused</span>
+                        </label>
+                    </div>
+                    <div class="experience-level">
+                        <h5>Experience Level</h5>
+                        <div class="experience-buttons">
+                            <button class="experience-btn">Student</button>
+                            <button class="experience-btn active">Professional</button>
+                            <button class="experience-btn">Expert</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="main-content-area">
+                <!-- Search and Sort Bar -->
+                <div class="search-sort-bar">
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" placeholder="Search mentors, subjects, or skills..." class="search-input" id="searchInput">
+                    </div>
+                    <div class="sort-container">
+                        <select class="sort-select" id="sortSelect">
+                            <option value="relevance">Relevance</option>
+                            <option value="rating">Rating</option>
+                            <option value="priceLow">Price: Low to High</option>
+                            <option value="priceHigh">Price: High to Low</option>
+                            <option value="popular">Most Popular</option>
+                        </select>
+                    </div>
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn" data-view="list">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Count -->
+                <div class="results-info">
+                    <span class="results-count">Showing 8 of 8 mentors</span>
+                    <button class="mobile-filters-toggle" id="mobileFiltersToggle">
+                        <i class="fas fa-filter"></i>
+                        Filters
+                    </button>
+                </div>
+
+                <!-- Mentor Cards Grid -->
+                <div class="mentor-grid" id="mentorGrid">
+                    <!-- Mentor cards will be dynamically generated here -->
+                </div>
+
+                <!-- Load More Button -->
+                <div class="load-more-container">
+                    <button class="load-more-btn" id="loadMoreBtn" style="display: none;">
+                        <i class="fas fa-spinner fa-spin" style="display: none;"></i>
+                        Load More Mentors
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Authentication Modal -->
+    <div class="auth-modal-overlay is-hidden" id="auth-modal-overlay">
+        <div class="auth-modal-container">
+            <button class="auth-modal-close-btn" id="auth-modal-close-btn"><i class="fas fa-times"></i></button>
+            <div class="auth-modal-tabs">
+                <button class="auth-tab-btn active" data-tab="login">Login</button>
+                <button class="auth-tab-btn" data-tab="signup">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <div class="auth-modal-body active" id="login-body">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required>
+                        <p class="error-message"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="login-password" required>
+                            <i class="fas fa-eye-slash toggle-password"></i>
+                        </div>
+                        <p class="error-message"></p>
+                    </div>
+                    <a href="#" class="forgot-password-link">Forgot Password?</a>
+                    <button type="submit" class="auth-btn primary-btn">Login</button>
+                    <div class="social-login-divider"><span>OR</span></div>
+                    <button type="button" class="auth-btn social-btn" id="google-login-btn">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google logo">
+                        Continue with Google
+                    </button>
+                </form>
+            </div>
+
+            <!-- Signup Form -->
+            <div class="auth-modal-body" id="signup-body">
+                <form id="signup-form">
+                    <!-- Step 1: Basic Info -->
+                    <div class="signup-step active" data-step="1">
+                        <h3>Create your account</h3>
+                        <div class="form-group">
+                            <label for="signup-name">Full Name</label>
+                            <input type="text" id="signup-name" required>
+                            <p class="error-message"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-email">Email</label>
+                            <input type="email" id="signup-email" required>
+                            <p class="error-message"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="signup-password" required>
+                                <i class="fas fa-eye-slash toggle-password"></i>
+                            </div>
+                            <div class="password-strength-meter">
+                                <div class="strength-bar"></div>
+                                <p class="strength-text"></p>
+                            </div>
+                            <ul class="password-criteria">
+                                <li data-criterion="length">Minimum 8 characters</li>
+                                <li data-criterion="capital">At least one capital letter</li>
+                                <li data-criterion="symbol">At least one symbol</li>
+                            </ul>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-confirm-password">Confirm Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="signup-confirm-password" required>
+                                <i class="fas fa-eye-slash toggle-password"></i>
+                            </div>
+                            <p class="error-message"></p>
+                        </div>
+                        <div class="form-group terms">
+                            <input type="checkbox" id="signup-terms" required>
+                            <label for="signup-terms">I agree to the <a href="#">Terms & Conditions</a></label>
+                        </div>
+                        <button type="button" class="auth-btn primary-btn" id="signup-next-btn">Next</button>
+                    </div>
+
+                    <!-- Step 2: Profile Setup -->
+                    <div class="signup-step" data-step="2">
+                        <h3>Set up your profile</h3>
+                        <div class="form-group">
+                            <label for="signup-username">Username</label>
+                            <input type="text" id="signup-username" required>
+                            <p class="error-message"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-bio">Short Bio</label>
+                            <textarea id="signup-bio" rows="3" placeholder="Tell us a bit about yourself..."></textarea>
+                        </div>
+                        <div class="form-group-row">
+                            <button type="button" class="auth-btn secondary-btn" id="signup-back-btn">Back</button>
+                            <button type="submit" class="auth-btn primary-btn">Create Account</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Success -->
+                    <div class="signup-step success-step" data-step="3">
+                        <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+                        <h3>Welcome, <span id="success-username"></span>!</h3>
+                        <p>Your account has been created successfully.</p>
+                        <a href="dashboard.html" class="auth-btn primary-btn">Go to Dashboard</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>

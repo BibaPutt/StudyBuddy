@@ -1,0 +1,337 @@
+/* Auth Modal Styles */
+.auth-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 20, 40, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.auth-modal-overlay.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.auth-modal-container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 420px;
+    position: relative;
+    overflow: hidden;
+    transform: scale(1);
+    transition: transform 0.3s ease;
+}
+
+.auth-modal-overlay.is-hidden .auth-modal-container {
+    transform: scale(0.95);
+}
+
+.auth-modal-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #9ca3af;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.auth-modal-tabs {
+    display: flex;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.auth-tab-btn {
+    flex: 1;
+    padding: 16px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.auth-tab-btn.active {
+    color: #9333ea;
+}
+
+.auth-tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #9333ea;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.auth-tab-btn.active::after {
+    transform: scaleX(1);
+}
+
+.auth-modal-body {
+    padding: 24px 32px;
+    display: none;
+}
+
+.auth-modal-body.active {
+    display: block;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #9333ea;
+    box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    cursor: pointer;
+}
+
+.error-message {
+    color: #ef4444;
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+}
+
+.form-group.error input {
+    border-color: #ef4444;
+}
+
+.form-group.error .error-message {
+    display: block;
+}
+
+.forgot-password-link {
+    display: block;
+    text-align: right;
+    font-size: 13px;
+    color: #9333ea;
+    text-decoration: none;
+    margin-top: -12px;
+    margin-bottom: 20px;
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.primary-btn {
+    background: #9333ea;
+    color: #fff;
+}
+.primary-btn:hover {
+    background: #7c3aed;
+}
+
+.secondary-btn {
+    background: #f3f4f6;
+    color: #1f2937;
+    border: 1px solid #d1d5db;
+}
+.secondary-btn:hover {
+    background: #e5e7eb;
+}
+
+.social-login-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 12px;
+    margin: 24px 0;
+}
+.social-login-divider::before,
+.social-login-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e5e7eb;
+}
+.social-login-divider span {
+    padding: 0 10px;
+}
+
+.social-btn {
+    background: #fff;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+.social-btn:hover {
+    background: #f9fafb;
+}
+.social-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+/* Signup Flow */
+#signup-body {
+    overflow: hidden;
+}
+#signup-form {
+    display: flex;
+    transition: transform 0.4s ease-in-out;
+}
+.signup-step {
+    min-width: 100%;
+    flex-shrink: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+.signup-step:not(.active) {
+    opacity: 0;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+}
+.signup-step.active {
+    opacity: 1;
+    visibility: visible;
+    height: auto;
+}
+
+.password-strength-meter {
+    margin-top: 8px;
+}
+.strength-bar {
+    width: 100%;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    transition: background-color 0.3s ease;
+}
+.strength-text {
+    font-size: 12px;
+    margin-top: 4px;
+    text-align: right;
+}
+.password-criteria {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: #6b7280;
+}
+.password-criteria li {
+    transition: color 0.3s ease;
+}
+.password-criteria li.valid {
+    color: #22c55e;
+}
+.password-criteria li.valid::before {
+    content: '✓ ';
+    font-weight: bold;
+}
+
+.form-group.terms {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.form-group.terms label {
+    margin: 0;
+    font-size: 13px;
+}
+.form-group.terms a {
+    color: #9333ea;
+    text-decoration: none;
+}
+
+.form-group-row {
+    display: flex;
+    gap: 12px;
+}
+.form-group-row .auth-btn {
+    flex: 1;
+}
+
+.success-step {
+    text-align: center;
+    padding: 40px 0;
+}
+.success-icon {
+    font-size: 64px;
+    color: #22c55e;
+    margin-bottom: 16px;
+}
+.success-step h3 {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+.success-step p {
+    color: #6b7280;
+    margin-bottom: 24px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .auth-modal-container {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+    .auth-modal-body {
+        padding: 24px;
+    }
+}

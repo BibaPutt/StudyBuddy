@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Dashboard - StudyBuddy</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="course-wizard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-book-open book-icon"></i>
+                <span class="logo-text">StudyBuddy</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-link active" data-view="dashboard-home"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="#" class="nav-link" data-view="schedule"><i class="fas fa-calendar-alt"></i> My Schedule</a>
+                <a href="#" class="nav-link" data-view="courses"><i class="fas fa-chalkboard-teacher"></i> My Courses</a>
+                <a href="#" class="nav-link" data-view="messages"><i class="fas fa-envelope"></i> Messages <span id="message-badge" class="badge">3</span></a>
+                <a href="#" class="nav-link" data-view="analytics"><i class="fas fa-chart-line"></i> Analytics</a>
+                <a href="#" class="nav-link" data-view="earnings"><i class="fas fa-wallet"></i> Earnings</a>
+                <a href="#" class="nav-link" data-view="profile"><i class="fas fa-user-circle"></i> Profile</a>
+                <a href="#" class="nav-link" data-view="settings"><i class="fas fa-cog"></i> Settings</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="index.html" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <h1 id="header-title">Welcome back, Ananya!</h1>
+                    <p id="header-subtitle">Here's your performance overview for this month.</p>
+                </div>
+                <div class="header-right">
+                    <div class="notification-wrapper">
+                        <button class="notification-btn" id="notification-btn">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge" id="notification-badge">2</span>
+                        </button>
+                        <div class="notifications-dropdown" id="notifications-dropdown">
+                            <!-- Notifications populated by JS -->
+                        </div>
+                    </div>
+                    <div class="profile-menu-wrapper">
+                        <div class="profile-menu" id="profile-menu-btn">
+                            <img src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Mentor Avatar">
+                            <span id="profile-menu-name">Ananya S.</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="profile-dropdown" id="profile-dropdown">
+                            <a href="#" class="nav-link" data-view="profile">My Profile</a>
+                            <a href="#" class="nav-link" data-view="settings">Settings</a>
+                            <a href="index.html" class="nav-link">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ================================================== -->
+            <!--                  DASHBOARD VIEWS                   -->
+            <!-- ================================================== -->
+
+            <!-- View: Dashboard Home -->
+            <div id="dashboard-home-view" class="dashboard-view active">
+                <section class="quick-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e0f2fe;">
+                            <svg class="coin-svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-title">Month's Earnings</span>
+                            <span class="stat-value coin-value">12,500</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fce7f3;"><i class="fas fa-video" style="color: #db2777;"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-title">Sessions This Week</span>
+                            <span class="stat-value">8</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #ecfdf5;"><i class="fas fa-users" style="color: #10b981;"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-title">Total Students</span>
+                            <span class="stat-value">24</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fefce8;"><i class="fas fa-star" style="color: #f59e0b;"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-title">Average Rating</span>
+                            <span class="stat-value">4.9 <small>/ 5</small></span>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="dashboard-grid">
+                    <div class="main-column">
+                        <section class="widget-card">
+                            <div class="card-header">
+                                <h2>Earnings Overview</h2>
+                                <select id="earnings-period-select">
+                                    <option value="monthly">This Month</option>
+                                    <option value="biannual">Last 6 Months</option>
+                                </select>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="earningsChart"></canvas>
+                            </div>
+                        </section>
+
+                        <section class="widget-card">
+                            <div class="card-header">
+                                <h2>Recent Sessions</h2>
+                                <a href="#" class="view-all" data-view="schedule">View All</a>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="recent-sessions-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Student</th>
+                                                <th>Subject</th>
+                                                <th>Date</th>
+                                                <th>Status</th>
+                                                <th>Earnings</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Populated by JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="side-column">
+                        <section class="widget-card">
+                            <div class="card-header">
+                                <h2>Quick Actions</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="quick-actions">
+                                    <button id="create-course-btn" class="action-btn primary"><i class="fas fa-plus-circle"></i> Create New Course</button>
+                                    <button class="action-btn" data-view="schedule"><i class="fas fa-calendar-check"></i> View My Schedule</button>
+                                    <button class="action-btn" data-view="messages"><i class="fas fa-comment-dots"></i> Check Messages</button>
+                                    <button id="withdraw-earnings-btn" class="action-btn"><i class="fas fa-hand-holding-usd"></i> Withdraw Earnings</button>
+                                    <button class="action-btn" data-view="profile"><i class="fas fa-edit"></i> Update Profile</button>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <section class="widget-card">
+                            <div class="card-header">
+                                <h2>Profile Completion</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="profile-completion">
+                                    <div class="progress-circle">
+                                        <svg width="100" height="100" viewBox="0 0 100 100">
+                                            <circle cx="50" cy="50" r="45" class="bg"></circle>
+                                            <circle cx="50" cy="50" r="45" class="progress" style="stroke-dashoffset: 63;"></circle>
+                                        </svg>
+                                        <span>85%</span>
+                                    </div>
+                                    <p>Great job! Just a few more steps to a perfect profile.</p>
+                                    <a href="#" data-view="profile">Add your certifications</a>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View: My Schedule -->
+            <div id="schedule-view" class="dashboard-view">
+                <section class="widget-card">
+                    <div class="card-header"><h2>My Schedule</h2></div>
+                    <div class="card-body" id="schedule-container">
+                        <!-- Schedule content populated by JS -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- View: My Courses -->
+            <div id="courses-view" class="dashboard-view">
+                <section class="widget-card">
+                    <div class="card-header"><h2>My Courses</h2></div>
+                    <div class="card-body" id="courses-container">
+                        <!-- Courses content populated by JS -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- View: Messages -->
+            <div id="messages-view" class="dashboard-view">
+                <div class="messages-layout">
+                    <div class="conversations-list" id="conversations-list">
+                        <!-- Conversations populated by JS -->
+                    </div>
+                    <div class="chat-window">
+                        <div class="chat-header" id="chat-header">Select a conversation</div>
+                        <div class="chat-body" id="chat-body"></div>
+                        <div class="chat-footer">
+                            <input type="text" placeholder="Type your message...">
+                            <button><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View: Analytics -->
+            <div id="analytics-view" class="dashboard-view">
+                <section class="widget-card">
+                    <div class="card-header"><h2>Advanced Analytics</h2></div>
+                    <div class="card-body">Analytics coming soon...</div>
+                </section>
+            </div>
+
+            <!-- View: Earnings -->
+            <div id="earnings-view" class="dashboard-view">
+                <section class="widget-card">
+                    <div class="card-header"><h2>Earnings & Transactions</h2></div>
+                    <div class="card-body" id="earnings-container">
+                        <!-- Earnings content populated by JS -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- View: Profile -->
+            <div id="profile-view" class="dashboard-view">
+                <section class="widget-card">
+                    <div class="card-header"><h2>Edit Profile</h2></div>
+                    <div class="card-body" id="profile-form-container">
+                        <!-- Profile form populated by JS -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- View: Settings -->
+            <div id="settings-view" class="dashboard-view">
+                <section class="widget-card">
+                    <div class="card-header"><h2>Settings</h2></div>
+                    <div class="card-body" id="settings-form-container">
+                        <!-- Settings form populated by JS -->
+                    </div>
+                </section>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ================================================== -->
+    <!--                       MODALS                       -->
+    <!-- ================================================== -->
+
+    <!-- Course Creation Wizard Modal -->
+    <div class="wizard-overlay" id="course-wizard-overlay" style="display: none;">
+        <div class="wizard-container">
+            <div class="wizard-header">
+                <h2>Create New Course</h2>
+                <button class="close-wizard-btn" id="close-wizard-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="wizard-progress">
+                <div class="progress-step active" data-step="1"><span>1</span><p>Basics</p></div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="2"><span>2</span><p>Details</p></div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="3"><span>3</span><p>Pricing</p></div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="4"><span>4</span><p>Content</p></div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="5"><span>5</span><p>Publish</p></div>
+            </div>
+            <div class="wizard-body">
+                <form id="course-wizard-form">
+                    <div class="wizard-step active" data-step-content="1">
+                        <h3>Basic Information</h3>
+                        <div class="form-group"><label for="courseTitle">Course Title</label><input type="text" id="courseTitle" name="courseTitle" placeholder="e.g., Introduction to Python for Beginners" maxlength="100"></div>
+                        <div class="form-group"><label for="courseSubject">Subject Category</label><select id="courseSubject" name="courseSubject"><option value="">Select a subject...</option><option value="programming">Programming</option><option value="mathematics">Mathematics</option><option value="science">Science</option></select></div>
+                        <div class="form-group"><label for="courseDescription">Course Description</label><textarea id="courseDescription" name="courseDescription" rows="5" placeholder="Describe what students will learn in this course."></textarea></div>
+                        <div class="form-group-row">
+                            <div class="form-group"><label>Difficulty Level</label><div class="segmented-control"><input type="radio" id="levelBeginner" name="difficulty" value="beginner" checked><label for="levelBeginner">Beginner</label><input type="radio" id="levelIntermediate" name="difficulty" value="intermediate"><label for="levelIntermediate">Intermediate</label><input type="radio" id="levelAdvanced" name="difficulty" value="advanced"><label for="levelAdvanced">Advanced</label></div></div>
+                            <div class="form-group"><label>Session Duration</label><select id="courseDuration" name="courseDuration"><option value="30">30 minutes</option><option value="60" selected>1 hour</option><option value="90">1.5 hours</option><option value="120">2 hours</option></select></div>
+                        </div>
+                    </div>
+                    <div class="wizard-step" data-step-content="2">
+                        <h3>Session Details</h3>
+                        <div class="form-group"><label>Session Type</label><div class="segmented-control"><input type="radio" id="type1on1" name="sessionType" value="1-on-1" checked><label for="type1on1">1-on-1</label><input type="radio" id="typeGroup" name="sessionType" value="group"><label for="typeGroup">Group</label></div></div>
+                        <div id="group-options" style="display: none;"><div class="form-group"><label for="maxParticipants">Max Participants (2-10)</label><input type="number" id="maxParticipants" name="maxParticipants" min="2" max="10" value="5"></div></div>
+                        <div class="form-group"><label>Materials Needed (Check all that apply)</label><div class="checkbox-group"><label><input type="checkbox" name="materials" value="notes">Provided Notes</label><label><input type="checkbox" name="materials" value="textbook">Textbook</label><label><input type="checkbox" name="materials" value="software">Specific Software</label></div></div>
+                    </div>
+                    <div class="wizard-step" data-step-content="3">
+                        <h3>Pricing & Availability</h3>
+                        <div class="ai-pricing-card"><div class="ai-header"><h4><i class="fas fa-brain"></i> AI Price Recommendation</h4><button type="button" id="get-price-recommendation" class="btn-secondary">Analyze</button></div><div id="ai-result" class="ai-result" style="display: none;"><p>Recommended: <strong id="ai-recommended-price" class="coin-value">1200/hr</strong></p><small>Based on 12 similar 'Programming' courses by mentors with your experience level.</small></div></div>
+                        <div class="form-group"><label for="coursePrice">Your Price (per session, in coins)</label><input type="number" id="coursePrice" name="coursePrice" placeholder="e.g., 1000"></div>
+                    </div>
+                    <div class="wizard-step" data-step-content="4">
+                        <h3>Course Content</h3>
+                        <div class="form-group"><label>Learning Objectives (one per line)</label><textarea id="learningObjectives" name="learningObjectives" rows="4" placeholder="e.g., Understand variables and data types"></textarea></div>
+                        <div class="form-group"><label>Upload Resources (PDFs, ZIP files)</label><input type="file" id="courseResources" name="courseResources" multiple></div>
+                    </div>
+                    <div class="wizard-step" data-step-content="5">
+                        <h3>Preview & Publish</h3>
+                        <p>This is how students will see your course listing.</p>
+                        <div class="course-preview-card"><h4 id="preview-title">Course Title</h4><p><span id="preview-subject" class="tag">Subject</span> <span id="preview-difficulty" class="tag">Difficulty</span></p><p id="preview-description">Description will appear here.</p><div class="preview-footer"><span><i class="fas fa-clock"></i> <span id="preview-duration">1 hour</span></span><strong class="coin-value" id="preview-price">1000</strong></div></div>
+                    </div>
+                </form>
+            </div>
+            <div class="wizard-footer">
+                <button class="btn-secondary" id="wizard-back-btn" style="display: none;">Back</button>
+                <button class="btn-secondary" id="wizard-draft-btn">Save as Draft</button>
+                <button class="btn-primary" id="wizard-next-btn">Next Step</button>
+                <button class="btn-primary" id="wizard-publish-btn" style="display: none;">Publish Course</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generic Modal -->
+    <div class="modal-overlay" id="generic-modal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 id="modal-title">Modal Title</h2>
+                <button class="close-modal-btn" id="close-modal-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <p>Modal content goes here.</p>
+            </div>
+            <div class="modal-footer" id="modal-footer">
+                <button class="btn-secondary" id="modal-cancel-btn">Cancel</button>
+                <button class="btn-primary" id="modal-confirm-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="dashboard.js"></script>
+    <script type="module" src="course-wizard.js"></script>
+</body>
+</html>

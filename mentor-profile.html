@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyBuddy - Mentor Profile</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="booking.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-book-open book-icon"></i>
+                <span class="logo-text">StudyBuddy</span>
+            </a>
+            <div class="nav-items">
+                <div class="nav-item dropdown">
+                    <span class="nav-link">Learner <i class="fas fa-chevron-down"></i></span>
+                    <div class="dropdown-menu">
+                        <a href="index.html" class="dropdown-item">Browse Mentors</a>
+                        <a href="my-sessions.html" class="dropdown-item">My Sessions</a>
+                    </div>
+                </div>
+                <div class="nav-item dropdown">
+                    <span class="nav-link">Tutor <i class="fas fa-chevron-down"></i></span>
+                    <div class="dropdown-menu">
+                        <a href="onboarding.html" class="dropdown-item">Become Mentor</a>
+                        <a href="dashboard.html" class="dropdown-item">My Dashboard</a>
+                    </div>
+                </div>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+                <a href="#" class="nav-link">About Us</a>
+            </div>
+            <div class="nav-right">
+                <div class="coins-display" id="coinsDisplay">
+                    <i class="fas fa-coins coin-icon"></i>
+                    <span class="coin-balance">1,250</span>
+                    <div class="sparkle"></div>
+                </div>
+                <button class="join-btn" id="join-btn">Join StudyBuddy</button>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <div class="mobile-nav" id="mobileNav">
+            <!-- Mobile nav content will be handled by script.js -->
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="index.html" class="breadcrumb-item">Home</a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="index.html" class="breadcrumb-item">Find Mentors</a>
+            <i class="fas fa-chevron-right"></i>
+            <span class="breadcrumb-item active">Dr. Sarah Chen</span>
+        </div>
+
+        <!-- Redesigned Mentor Profile Header -->
+        <div class="mentor-profile-header-compact">
+            <div class="profile-header-avatar-container">
+                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=120&h=120&fit=crop&crop=face" alt="Dr. Sarah Chen" class="profile-header-avatar">
+                <div class="profile-header-verified-badge"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="profile-header-main">
+                <h1>Dr. Sarah Chen</h1>
+                <p class="mentor-headline">Senior Software Engineer at Google</p>
+                <div class="profile-header-meta">
+                    <div class="rating-section">
+                        <div class="stars">
+                            <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star-half-alt star"></i>
+                        </div>
+                        <span class="rating-text">4.9 (127 reviews)</span>
+                    </div>
+                    <div class="language-flags">
+                        <span class="flag">🇺🇸</span>
+                        <span class="flag">🇨🇳</span>
+                    </div>
+                    <div class="status-badge available">
+                        <i class="fas fa-circle"></i>
+                        Available Now
+                    </div>
+                </div>
+            </div>
+            <div class="profile-header-actions">
+                <div class="profile-header-stats">
+                    <div class="stat">
+                        <span class="stat-number">156</span>
+                        <span class="stat-label">Sessions</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">89</span>
+                        <span class="stat-label">Students</span>
+                    </div>
+                </div>
+                <button class="primary-cta" id="bookSessionBtn">
+                    <i class="fas fa-calendar-plus"></i>
+                    Book Session
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Profile Content -->
+        <div class="profile-content">
+            <!-- Left Column (40%) -->
+            <div class="profile-left">
+                <!-- Demo Video Section -->
+                <div class="demo-video-section">
+                    <h3>Demo Video</h3>
+                    <div class="video-player">
+                        <div class="video-thumbnail">
+                            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop" alt="Demo Video Thumbnail">
+                            <div class="play-button"><i class="fas fa-play"></i></div>
+                            <div class="video-duration">12:34</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Panel -->
+                <div class="quick-actions-panel">
+                    <h3>Quick Actions</h3>
+                    <button class="secondary-btn"><i class="fas fa-envelope"></i> Send Message</button>
+                    <button class="secondary-btn"><i class="fas fa-heart"></i> Add to Favorites</button>
+                    <button class="share-btn"><i class="fas fa-share-alt"></i> Share Profile</button>
+                </div>
+
+                <!-- Pricing Card -->
+                <div class="pricing-card">
+                    <h3>Pricing</h3>
+                    <div class="price-main">
+                        <span class="price-amount">🪙 1,500</span>
+                        <span class="price-unit">per session</span>
+                    </div>
+                    <div class="discount-badges">
+                        <span class="discount-badge">Book 5+ sessions: 15% off</span>
+                    </div>
+                    <div class="guarantee-badge">
+                        <i class="fas fa-shield-alt"></i> Money-back guarantee
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column (60%) -->
+            <div class="profile-right">
+                <div class="profile-tabs">
+                    <div class="tab-navigation">
+                        <button class="tab-btn active" data-tab="about"><i class="fas fa-user"></i> About</button>
+                        <button class="tab-btn" data-tab="courses"><i class="fas fa-book"></i> Courses</button>
+                        <button class="tab-btn" data-tab="reviews"><i class="fas fa-star"></i> Reviews</button>
+                        <button class="tab-btn" data-tab="schedule"><i class="fas fa-calendar"></i> Schedule</button>
+                    </div>
+                    <div class="tab-content">
+                        <!-- About Tab -->
+                        <div class="tab-pane active" id="about">
+                            <div class="about-section">
+                                <h3>Biography</h3>
+                                <p>Dr. Sarah Chen is a Senior Software Engineer at Google with over 8 years of experience in machine learning and data science. She holds a Ph.D. in Computer Science from Stanford University and has published numerous papers in top-tier conferences.</p>
+                                <h3>Education</h3>
+                                <div class="education-item">
+                                    <div class="education-degree">Ph.D. in Computer Science</div>
+                                    <div class="education-school">Stanford University</div>
+                                    <div class="education-year">2018-2022</div>
+                                </div>
+                                <h3>Teaching Philosophy</h3>
+                                <p>I believe in hands-on learning and real-world applications. My approach focuses on building strong fundamentals while working on practical projects that students can add to their portfolios.</p>
+                                <h3>Achievements & Certifications</h3>
+                                <div class="achievements">
+                                    <span class="achievement-badge">Google ML Certification</span>
+                                    <span class="achievement-badge">AWS Solutions Architect</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Courses Tab -->
+                        <div class="tab-pane" id="courses">
+                            <div class="courses-grid">
+                                <!-- Course Card 1 -->
+                                <div class="course-card">
+                                    <div class="course-header">
+                                        <h4>Python for Beginners</h4>
+                                        <span class="course-difficulty beginner">Beginner</span>
+                                    </div>
+                                    <p class="course-description">Learn Python fundamentals with hands-on projects, covering data types, loops, functions, and basic data structures.</p>
+                                    <div class="course-meta">
+                                        <span class="duration"><i class="fas fa-clock"></i> 8 sessions</span>
+                                        <span class="price">🪙 1,200</span>
+                                    </div>
+                                    <div class="course-actions">
+                                        <button class="secondary-btn btn-sm">View Syllabus</button>
+                                        <button class="primary-cta btn-sm">Enroll Now</button>
+                                    </div>
+                                </div>
+                                <!-- Course Card 2 -->
+                                <div class="course-card">
+                                    <div class="course-header">
+                                        <h4>Advanced Machine Learning</h4>
+                                        <span class="course-difficulty advanced">Advanced</span>
+                                    </div>
+                                    <p class="course-description">Dive deep into neural networks, reinforcement learning, and model deployment with TensorFlow and PyTorch.</p>
+                                    <div class="course-meta">
+                                        <span class="duration"><i class="fas fa-clock"></i> 12 sessions</span>
+                                        <span class="price">🪙 2,500</span>
+                                    </div>
+                                    <div class="course-actions">
+                                        <button class="secondary-btn btn-sm">View Syllabus</button>
+                                        <button class="primary-cta btn-sm">Enroll Now</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Reviews Tab -->
+                        <div class="tab-pane" id="reviews">
+                            <div class="reviews-summary">
+                                <div class="summary-score">
+                                    <div class="score-value">4.9</div>
+                                    <div class="score-stars">
+                                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                    <div class="score-count">127 Reviews</div>
+                                </div>
+                                <div class="summary-bars">
+                                    <div class="bar-item"><span>5</span><i class="fas fa-star"></i><div class="bar"><div class="bar-fill" style="width: 90%;"></div></div><span>114</span></div>
+                                    <div class="bar-item"><span>4</span><i class="fas fa-star"></i><div class="bar"><div class="bar-fill" style="width: 8%;"></div></div><span>10</span></div>
+                                    <div class="bar-item"><span>3</span><i class="fas fa-star"></i><div class="bar"><div class="bar-fill" style="width: 2%;"></div></div><span>2</span></div>
+                                    <div class="bar-item"><span>2</span><i class="fas fa-star"></i><div class="bar"><div class="bar-fill" style="width: 1%;"></div></div><span>1</span></div>
+                                    <div class="bar-item"><span>1</span><i class="fas fa-star"></i><div class="bar"><div class="bar-fill" style="width: 0%;"></div></div><span>0</span></div>
+                                </div>
+                            </div>
+                            <div class="reviews-list">
+                                <div class="review-card">
+                                    <div class="review-header">
+                                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" alt="Student" class="student-avatar">
+                                        <div class="review-info">
+                                            <div class="student-name">Alex Johnson</div>
+                                            <div class="review-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                                            <div class="review-date">2 days ago</div>
+                                        </div>
+                                    </div>
+                                    <p class="review-text">Sarah is an amazing teacher! She explains complex topics in a simple way and is very patient. Highly recommended!</p>
+                                </div>
+                                <div class="review-card">
+                                    <div class="review-header">
+                                        <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=40&h=40&fit=crop&crop=face" alt="Student" class="student-avatar">
+                                        <div class="review-info">
+                                            <div class="student-name">Michael Brown</div>
+                                            <div class="review-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                                            <div class="review-date">1 week ago</div>
+                                        </div>
+                                    </div>
+                                    <p class="review-text">The machine learning course was fantastic. The hands-on projects were invaluable for my portfolio.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Schedule Tab -->
+                        <div class="tab-pane" id="schedule">
+                            <div class="schedule-section">
+                                <h3>Weekly Availability</h3>
+                                <p class="schedule-timezone">All times are in your local timezone: (UTC-5)</p>
+                                <div class="schedule-grid">
+                                    <div class="day-column">
+                                        <div class="day-header">Mon</div>
+                                        <div class="time-slot">9am - 11am</div>
+                                        <div class="time-slot unavailable">11am - 1pm</div>
+                                        <div class="time-slot">1pm - 5pm</div>
+                                    </div>
+                                    <div class="day-column">
+                                        <div class="day-header">Tue</div>
+                                        <div class="time-slot unavailable">9am - 1pm</div>
+                                        <div class="time-slot">1pm - 5pm</div>
+                                    </div>
+                                    <div class="day-column">
+                                        <div class="day-header">Wed</div>
+                                        <div class="time-slot">9am - 12pm</div>
+                                        <div class="time-slot unavailable">12pm - 5pm</div>
+                                    </div>
+                                    <div class="day-column">
+                                        <div class="day-header">Thu</div>
+                                        <div class="time-slot">10am - 2pm</div>
+                                        <div class="time-slot unavailable">2pm - 5pm</div>
+                                    </div>
+                                    <div class="day-column">
+                                        <div class="day-header">Fri</div>
+                                        <div class="time-slot">9am - 1pm</div>
+                                        <div class="time-slot unavailable">1pm - 5pm</div>
+                                    </div>
+                                    <div class="day-column">
+                                        <div class="day-header">Sat</div>
+                                        <div class="time-slot unavailable">Unavailable</div>
+                                    </div>
+                                    <div class="day-column">
+                                        <div class="day-header">Sun</div>
+                                        <div class="time-slot">1pm - 4pm</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trust & Safety Section -->
+        <div class="trust-safety-section">
+            <h3>Trust & Safety</h3>
+            <div class="trust-badges">
+                <div class="trust-badge"><i class="fas fa-shield-alt"></i><span>Verified Profile</span></div>
+                <div class="trust-badge"><i class="fas fa-clock"></i><span>98% Response Rate</span></div>
+                <div class="trust-badge"><i class="fas fa-calendar-check"></i><span>Flexible Cancellation</span></div>
+            </div>
+            <div class="safety-actions">
+                <button class="report-btn"><i class="fas fa-flag"></i> Report Profile</button>
+                <button class="block-btn"><i class="fas fa-ban"></i> Block User</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Booking Modal -->
+    <div class="booking-modal-overlay" id="bookingModalOverlay">
+        <div class="booking-modal">
+            <button class="close-modal-btn" id="closeBookingModal"><i class="fas fa-times"></i></button>
+            <div class="modal-header">
+                <div class="mentor-summary-compact">
+                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=60&h=60&fit=crop&crop=face" alt="Dr. Sarah Chen" class="mentor-avatar-small">
+                    <div>
+                        <h3 class="mentor-name-small">Dr. Sarah Chen</h3>
+                        <p class="mentor-headline-small">Booking a session</p>
+                    </div>
+                </div>
+                <div class="booking-progress-indicator">
+                    <div class="progress-step active" data-step="1"></div>
+                    <div class="progress-step" data-step="2"></div>
+                    <div class="progress-step" data-step="3"></div>
+                    <div class="progress-step" data-step="4"></div>
+                </div>
+            </div>
+            <div class="modal-content">
+                <div class="booking-step active" id="step1"></div>
+                <div class="booking-step" id="step2"></div>
+                <div class="booking-step" id="step3"></div>
+                <div class="booking-step" id="step4"></div>
+                <div class="booking-step" id="successStep"></div>
+            </div>
+            <div class="modal-footer">
+                <div class="price-summary">
+                    <span class="price-label">Total Price:</span>
+                    <span class="price-value" id="modalPrice">🪙 1,500</span>
+                </div>
+                <div class="footer-actions">
+                    <button class="secondary-btn" id="backBtn" style="display: none;">Back</button>
+                    <button class="primary-cta" id="nextBtn" disabled>Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Modal -->
+    <div class="auth-modal-overlay is-hidden" id="auth-modal-overlay">
+        <div class="auth-modal-container">
+            <button class="auth-modal-close-btn" id="auth-modal-close-btn"><i class="fas fa-times"></i></button>
+            <div class="auth-modal-tabs">
+                <button class="auth-tab-btn active" data-tab="login">Login</button>
+                <button class="auth-tab-btn" data-tab="signup">Sign Up</button>
+            </div>
+            <div class="auth-modal-body active" id="login-body">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required>
+                        <p class="error-message"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="login-password" required>
+                            <i class="fas fa-eye-slash toggle-password"></i>
+                        </div>
+                        <p class="error-message"></p>
+                    </div>
+                    <a href="#" class="forgot-password-link">Forgot Password?</a>
+                    <button type="submit" class="auth-btn primary-btn">Login</button>
+                    <div class="social-login-divider"><span>OR</span></div>
+                    <button type="button" class="auth-btn social-btn" id="google-login-btn">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google logo">
+                        Continue with Google
+                    </button>
+                </form>
+            </div>
+            <div class="auth-modal-body" id="signup-body">
+                <form id="signup-form">
+                    <div class="signup-step active" data-step="1">
+                        <h3>Create your account</h3>
+                        <div class="form-group"><label for="signup-name">Full Name</label><input type="text" id="signup-name" required><p class="error-message"></p></div>
+                        <div class="form-group"><label for="signup-email">Email</label><input type="email" id="signup-email" required><p class="error-message"></p></div>
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <div class="password-wrapper"><input type="password" id="signup-password" required><i class="fas fa-eye-slash toggle-password"></i></div>
+                            <div class="password-strength-meter"><div class="strength-bar"></div><p class="strength-text"></p></div>
+                            <ul class="password-criteria">
+                                <li data-criterion="length">Minimum 8 characters</li>
+                                <li data-criterion="capital">At least one capital letter</li>
+                                <li data-criterion="symbol">At least one symbol</li>
+                            </ul>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-confirm-password">Confirm Password</label>
+                            <div class="password-wrapper"><input type="password" id="signup-confirm-password" required><i class="fas fa-eye-slash toggle-password"></i></div>
+                            <p class="error-message"></p>
+                        </div>
+                        <div class="form-group terms"><input type="checkbox" id="signup-terms" required><label for="signup-terms">I agree to the <a href="#">Terms & Conditions</a></label></div>
+                        <button type="button" class="auth-btn primary-btn" id="signup-next-btn">Next</button>
+                    </div>
+                    <div class="signup-step" data-step="2">
+                        <h3>Set up your profile</h3>
+                        <div class="form-group"><label for="signup-username">Username</label><input type="text" id="signup-username" required><p class="error-message"></p></div>
+                        <div class="form-group"><label for="signup-bio">Short Bio</label><textarea id="signup-bio" rows="3" placeholder="Tell us a bit about yourself..."></textarea></div>
+                        <div class="form-group-row"><button type="button" class="auth-btn secondary-btn" id="signup-back-btn">Back</button><button type="submit" class="auth-btn primary-btn">Create Account</button></div>
+                    </div>
+                    <div class="signup-step success-step" data-step="3">
+                        <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+                        <h3>Welcome, <span id="success-username"></span>!</h3>
+                        <p>Your account has been created successfully.</p>
+                        <a href="dashboard.html" class="auth-btn primary-btn">Go to Dashboard</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+    <script type="module" src="mentor-profile.js"></script>
+    <script type="module" src="booking.js"></script>
+</body>
+</html>
