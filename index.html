@@ -76,7 +76,7 @@
         <div class="breadcrumb">
             <a href="index.html" class="breadcrumb-item">Home</a>
             <i class="fas fa-chevron-right"></i>
-            <span class="breadcrumb-item active">Find Mentors</span>
+            <span class="breadcrumb-item active">Browse Courses</span>
         </div>
 
         <div class="page-container">
@@ -343,7 +343,7 @@
                 <div class="search-sort-bar">
                     <div class="search-container">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" placeholder="Search mentors, subjects, or skills..." class="search-input" id="searchInput">
+                        <input type="text" placeholder="Search courses, subjects, or skills..." class="search-input" id="searchInput">
                     </div>
                     <div class="sort-container">
                         <select class="sort-select" id="sortSelect">
@@ -352,6 +352,7 @@
                             <option value="priceLow">Price: Low to High</option>
                             <option value="priceHigh">Price: High to Low</option>
                             <option value="popular">Most Popular</option>
+                            <option value="newest">Newest First</option>
                         </select>
                     </div>
                     <div class="view-toggle">
@@ -366,23 +367,23 @@
 
                 <!-- Results Count -->
                 <div class="results-info">
-                    <span class="results-count">Showing 8 of 8 mentors</span>
+                    <span class="results-count">Showing 0 of 0 courses</span>
                     <button class="mobile-filters-toggle" id="mobileFiltersToggle">
                         <i class="fas fa-filter"></i>
                         Filters
                     </button>
                 </div>
 
-                <!-- Mentor Cards Grid -->
-                <div class="mentor-grid" id="mentorGrid">
-                    <!-- Mentor cards will be dynamically generated here -->
+                <!-- Course Cards Grid -->
+                <div class="course-grid" id="courseGrid">
+                    <!-- Course cards will be dynamically generated here -->
                 </div>
 
                 <!-- Load More Button -->
                 <div class="load-more-container">
                     <button class="load-more-btn" id="loadMoreBtn" style="display: none;">
                         <i class="fas fa-spinner fa-spin" style="display: none;"></i>
-                        Load More Mentors
+                        Load More Courses
                     </button>
                 </div>
             </div>

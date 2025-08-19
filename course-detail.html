@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyBuddy - Course Details</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="booking.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-book-open book-icon"></i>
+                <span class="logo-text">StudyBuddy</span>
+            </a>
+            <div class="nav-items">
+                <div class="nav-item dropdown">
+                    <span class="nav-link">Learner <i class="fas fa-chevron-down"></i></span>
+                    <div class="dropdown-menu">
+                        <a href="index.html" class="dropdown-item">Browse Courses</a>
+                        <a href="my-sessions.html" class="dropdown-item">My Sessions</a>
+                    </div>
+                </div>
+                <div class="nav-item dropdown">
+                    <span class="nav-link">Tutor <i class="fas fa-chevron-down"></i></span>
+                    <div class="dropdown-menu">
+                        <a href="onboarding.html" class="dropdown-item">Become Mentor</a>
+                        <a href="dashboard.html" class="dropdown-item">My Dashboard</a>
+                    </div>
+                </div>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+                <a href="#" class="nav-link">About Us</a>
+            </div>
+            <div class="nav-right">
+                <div class="coins-display" id="coinsDisplay">
+                    <i class="fas fa-coins coin-icon"></i>
+                    <span class="coin-balance">1,250</span>
+                    <div class="sparkle"></div>
+                </div>
+                <button class="join-btn" id="join-btn">Join StudyBuddy</button>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="index.html" class="breadcrumb-item">Home</a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="index.html" class="breadcrumb-item">Browse Courses</a>
+            <i class="fas fa-chevron-right"></i>
+            <span class="breadcrumb-item active" id="course-breadcrumb">Course Details</span>
+        </div>
+
+        <!-- Course Header -->
+        <div class="mentor-profile-header-compact" id="course-header">
+            <!-- Content will be populated by JavaScript -->
+        </div>
+
+        <!-- Main Course Content -->
+        <div class="profile-content">
+            <!-- Left Column -->
+            <div class="profile-left">
+                <!-- Demo Video Section -->
+                <div class="demo-video-section">
+                    <h3>Course Preview</h3>
+                    <div class="video-player" id="course-video">
+                        <!-- Video content will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Quick Actions Panel -->
+                <div class="quick-actions-panel">
+                    <h3>Quick Actions</h3>
+                    <button class="primary-cta" id="enrollBtn">
+                        <i class="fas fa-graduation-cap"></i> Enroll Now
+                    </button>
+                    <button class="secondary-btn" id="messageBtn">
+                        <i class="fas fa-envelope"></i> Message Mentor
+                    </button>
+                    <button class="secondary-btn" id="favoriteBtn">
+                        <i class="fas fa-heart"></i> Add to Favorites
+                    </button>
+                    <button class="share-btn" id="shareBtn">
+                        <i class="fas fa-share-alt"></i> Share Course
+                    </button>
+                </div>
+
+                <!-- Pricing Card -->
+                <div class="pricing-card">
+                    <h3>Course Pricing</h3>
+                    <div class="price-main" id="course-pricing">
+                        <!-- Pricing content will be populated by JavaScript -->
+                    </div>
+                    <div class="guarantee-badge">
+                        <i class="fas fa-shield-alt"></i> Money-back guarantee
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="profile-right">
+                <div class="profile-tabs">
+                    <div class="tab-navigation">
+                        <button class="tab-btn active" data-tab="about"><i class="fas fa-info-circle"></i> About</button>
+                        <button class="tab-btn" data-tab="curriculum"><i class="fas fa-list"></i> Curriculum</button>
+                        <button class="tab-btn" data-tab="reviews"><i class="fas fa-star"></i> Reviews</button>
+                        <button class="tab-btn" data-tab="mentor"><i class="fas fa-user"></i> Mentor</button>
+                    </div>
+                    <div class="tab-content">
+                        <!-- About Tab -->
+                        <div class="tab-pane active" id="about">
+                            <div class="about-section" id="course-about">
+                                <!-- Content will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <!-- Curriculum Tab -->
+                        <div class="tab-pane" id="curriculum">
+                            <div class="curriculum-section" id="course-curriculum">
+                                <!-- Content will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <!-- Reviews Tab -->
+                        <div class="tab-pane" id="reviews">
+                            <div class="reviews-summary" id="reviews-summary">
+                                <!-- Content will be populated by JavaScript -->
+                            </div>
+                            <div class="reviews-list" id="reviews-list">
+                                <!-- Content will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <!-- Mentor Tab -->
+                        <div class="tab-pane" id="mentor">
+                            <div class="mentor-section" id="mentor-info">
+                                <!-- Content will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trust & Safety Section -->
+        <div class="trust-safety-section">
+            <h3>Trust & Safety</h3>
+            <div class="trust-badges">
+                <div class="trust-badge"><i class="fas fa-shield-alt"></i><span>Verified Course</span></div>
+                <div class="trust-badge"><i class="fas fa-clock"></i><span>24/7 Support</span></div>
+                <div class="trust-badge"><i class="fas fa-calendar-check"></i><span>Flexible Schedule</span></div>
+            </div>
+            <div class="safety-actions">
+                <button class="report-btn"><i class="fas fa-flag"></i> Report Course</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Enrollment Modal -->
+    <div class="booking-modal-overlay" id="enrollmentModalOverlay">
+        <div class="booking-modal">
+            <button class="close-modal-btn" id="closeEnrollmentModal"><i class="fas fa-times"></i></button>
+            <div class="modal-header">
+                <div class="mentor-summary-compact">
+                    <div id="enrollment-course-info">
+                        <!-- Course info will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-content">
+                <div class="booking-step active" id="enrollmentStep">
+                    <h2 class="step-title">Enroll in Course</h2>
+                    <div class="enrollment-details" id="enrollment-details">
+                        <!-- Enrollment details will be populated by JavaScript -->
+                    </div>
+                </div>
+                <div class="booking-step" id="enrollmentSuccess" style="display: none;">
+                    <div class="success-container">
+                        <div class="success-icon"><i class="fas fa-check"></i></div>
+                        <h2>Enrollment Successful!</h2>
+                        <p>Welcome to the course! You can now access all course materials and schedule sessions.</p>
+                        <div class="success-actions">
+                            <button class="primary-cta" onclick="window.location.href='/my-sessions.html'">Go to My Courses</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" id="enrollment-footer">
+                <div class="price-summary">
+                    <span class="price-label">Total Price:</span>
+                    <span class="price-value" id="enrollmentPrice">🪙 1,500</span>
+                </div>
+                <div class="footer-actions">
+                    <button class="secondary-btn" onclick="document.getElementById('enrollmentModalOverlay').classList.remove('active')">Cancel</button>
+                    <button class="primary-cta" id="confirmEnrollmentBtn">Confirm Enrollment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Modal -->
+    <div class="auth-modal-overlay is-hidden" id="auth-modal-overlay">
+        <!-- Auth modal content (same as other pages) -->
+    </div>
+
+    <script type="module" src="script.js"></script>
+    <script type="module" src="course-detail.js"></script>
+</body>
+</html>

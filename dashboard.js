@@ -1,15 +1,94 @@
-import { dashboardData } from './data.js';
+import { CourseService } from './courseService.js';
+import { AuthService } from './authService.js';
+
+let currentUser = null;
+let userProfile = null;
+let dashboardData = {};
 
 document.addEventListener('DOMContentLoaded', () => {
     let earningsChart; // To hold the chart instance
 
     // --- INITIALIZATION ---
-    const initDashboard = () => {
+    const initDashboard = async () => {
+        await initAuth();
+        
+        // Check if user is mentor
+        if (!userProfile || userProfile.role !== 'mentor') {
+            window.location.href = '/index.html';
+            return;
+        }
+        
+        await loadDashboardData();
+        setupEventListeners();
+        renderDashboard();
+    };
+    
+    const initAuth = async () => {
+        try {
+            currentUser = await AuthService.getCurrentUser();
+            if (currentUser) {
+                userProfile = await AuthService.getUserProfile();
+            } else {
+                window.location.href = '/index.html';
+                return;
+            }
+        } catch (error) {
+            console.error('Auth error:', error);
+            window.location.href = '/index.html';
+        }
+    };
+    
+    const loadDashboardData = async () => {
+        try {
+            // Load mentor's courses
+            const courses = await CourseService.getMentorCourses(currentUser.id);
+            
+            // Load course sessions
+            const allSessions = [];
+            for (const course of courses) {
+                const sessions = await CourseService.getCourseSessions(course.id, currentUser.id);
+                allSessions.push(...sessions.map(session => ({
+                    ...session,
+                    course_title: course.title
+                })));
+            }
+            
+            // Load course messages
+            const allMessages = [];
+            for (const course of courses) {
+                const messages = await CourseService.getCourseMessages(course.id);
+                allMessages.push(...messages);
+            }
+            
+            // Structure dashboard data
+            dashboardData = {
+                mentorProfile: {
+                    name: userProfile.full_name,
+                    headline: userProfile.headline || 'Expert Mentor',
+                    bio: userProfile.bio || '',
+                    subjects: courses.map(c => c.subject),
+                    avatar: userProfile.avatar_url
+                },
+                courses: courses,
+                sessions: allSessions,
+                messages: allMessages,
+                notifications: [], // Will be loaded separately
+                earnings: {
+                    balance: userProfile.excel_coin_balance || 0,
+                    transactions: [] // Will be loaded separately
+                }
+            };
+            
+        } catch (error) {
+            console.error('Error loading dashboard data:', error);
+        }
+    };
+    
+    const renderDashboard = () => {
         document.getElementById('profile-menu-name').textContent = dashboardData.mentorProfile.name;
         renderNotifications();
         renderRecentSessions();
         initChart('monthly');
-        setupEventListeners();
         updateBadges();
     };
 
@@ -65,14 +144,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderRecentSessions = () => {
         const tableBody = document.querySelector('#recent-sessions-table tbody');
         let html = '';
-        dashboardData.sessions.slice(0, 3).forEach(s => {
+        const recentSessions = dashboardData.sessions?.slice(0, 3) || [];
+        recentSessions.forEach(s => {
+            const scheduledDate = new Date(s.scheduled_start).toLocaleDateString();
+            const studentName = s.enrollment?.student?.full_name || 'Unknown Student';
             html += `
                 <tr>
-                    <td>${s.student}</td>
-                    <td>${s.subject}</td>
-                    <td>${s.date}</td>
+                    <td>${studentName}</td>
+                    <td>${s.course_title || s.title}</td>
+                    <td>${scheduledDate}</td>
                     <td><span class="status ${s.status.toLowerCase()}">${s.status}</span></td>
-                    <td><span class="coin-value">${s.earnings.toLocaleString()}</span></td>
+                    <td><span class="coin-value">-</span></td>
                     <td><button class="btn-secondary btn-sm" data-session-id="${s.id}">Details</button></td>
                 </tr>
             `;
@@ -83,12 +165,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderSchedule = () => {
         const container = document.getElementById('schedule-container');
         let html = '<h3>Upcoming Sessions</h3>';
-        dashboardData.sessions.filter(s => s.status === 'Upcoming').forEach(s => {
-            html += `<div class="schedule-item"><span>${s.date} - ${s.student} (${s.subject})</span><button class="btn-secondary btn-sm">View Details</button></div>`;
+        const upcomingSessions = dashboardData.sessions?.filter(s => s.status === 'scheduled') || [];
+        upcomingSessions.forEach(s => {
+            const scheduledDate = new Date(s.scheduled_start).toLocaleDateString();
+            const studentName = s.enrollment?.student?.full_name || 'Unknown Student';
+            html += `<div class="schedule-item"><span>${scheduledDate} - ${studentName} (${s.course_title})</span><button class="btn-secondary btn-sm">View Details</button></div>`;
         });
         html += '<h3>Past Sessions</h3>';
-        dashboardData.sessions.filter(s => s.status !== 'Upcoming').forEach(s => {
-            html += `<div class="schedule-item past"><span>${s.date} - ${s.student} (${s.subject})</span><span class="status ${s.status.toLowerCase()}">${s.status}</span></div>`;
+        const pastSessions = dashboardData.sessions?.filter(s => s.status !== 'scheduled') || [];
+        pastSessions.forEach(s => {
+            const scheduledDate = new Date(s.scheduled_start).toLocaleDateString();
+            const studentName = s.enrollment?.student?.full_name || 'Unknown Student';
+            html += `<div class="schedule-item past"><span>${scheduledDate} - ${studentName} (${s.course_title})</span><span class="status ${s.status.toLowerCase()}">${s.status}</span></div>`;
         });
         container.innerHTML = html;
     };
@@ -96,15 +184,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderCourses = () => {
         const container = document.getElementById('courses-container');
         let html = '';
-        dashboardData.courses.forEach(c => {
+        const courses = dashboardData.courses || [];
+        courses.forEach(c => {
             html += `
                 <div class="course-manage-item">
                     <div class="course-info">
                         <h4>${c.title}</h4>
                         <p>
-                            <span class="status ${c.status.toLowerCase()}">${c.status}</span>
-                            <span>${c.students} students</span>
-                            <span class="coin-value">${c.price}/session</span>
+                            <span class="status ${c.is_active ? 'published' : 'draft'}">${c.is_active ? 'Published' : 'Draft'}</span>
+                            <span>${c.enrollment_count || 0} students</span>
+                            <span class="coin-value">${c.price_per_session}/session</span>
                         </p>
                     </div>
                     <div class="course-actions">
@@ -120,16 +209,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderConversations = () => {
         const list = document.getElementById('conversations-list');
         let html = '';
-        dashboardData.conversations.forEach(c => {
+        
+        // Group messages by course
+        const courseMessages = {};
+        (dashboardData.messages || []).forEach(msg => {
+            if (!courseMessages[msg.course_id]) {
+                courseMessages[msg.course_id] = {
+                    course_id: msg.course_id,
+                    messages: [],
+                    lastMessage: null,
+                    unread: 0
+                };
+            }
+            courseMessages[msg.course_id].messages.push(msg);
+            if (!msg.is_read && msg.sender_id !== currentUser.id) {
+                courseMessages[msg.course_id].unread++;
+            }
+        });
+        
+        Object.values(courseMessages).forEach(c => {
+            const lastMsg = c.messages[c.messages.length - 1];
+            const course = dashboardData.courses?.find(course => course.id === c.course_id);
             html += `
-                <div class="conversation-item ${c.unread > 0 ? 'unread' : ''}" data-conv-id="${c.id}">
-                    <img src="${c.avatar}" alt="${c.student}">
+                <div class="conversation-item ${c.unread > 0 ? 'unread' : ''}" data-conv-id="${c.course_id}">
+                    <img src="${course?.course_image_url || 'https://via.placeholder.com/48x48'}" alt="${course?.title}">
                     <div class="conv-details">
                         <div class="conv-header">
-                            <strong>${c.student}</strong>
-                            <small>${c.timestamp}</small>
+                            <strong>${course?.title || 'Course Chat'}</strong>
+                            <small>${lastMsg ? new Date(lastMsg.created_at).toLocaleDateString() : ''}</small>
                         </div>
-                        <p>${c.lastMessage}</p>
+                        <p>${lastMsg?.message_text || 'No messages yet'}</p>
                     </div>
                     ${c.unread > 0 ? `<span class="unread-dot">${c.unread}</span>` : ''}
                 </div>
@@ -138,41 +247,64 @@ document.addEventListener('DOMContentLoaded', () => {
         list.innerHTML = html;
     };
 
-    const renderMessages = (convId) => {
-        const conversation = dashboardData.conversations.find(c => c.id == convId);
-        if (!conversation) return;
+    const renderMessages = async (courseId) => {
+        const course = dashboardData.courses?.find(c => c.id === courseId);
+        if (!course) return;
         
-        // Mark messages as read
-        conversation.unread = 0;
-        renderConversations(); // Re-render conversation list to remove unread dot
-        updateBadges(); // Update main message badge
-
-        const messages = dashboardData.messages[convId] || [];
-        document.getElementById('chat-header').innerHTML = `Chat with <strong>${conversation.student}</strong>`;
-        const body = document.getElementById('chat-body');
-        let html = '';
-        messages.forEach(m => {
-            const isMe = m.sender === dashboardData.mentorProfile.name;
-            html += `
-                <div class="message ${isMe ? 'sent' : 'received'}">
-                    <div class="message-bubble">
-                        <p>${m.text}</p>
-                        <small>${m.time}</small>
+        try {
+            const messages = await CourseService.getCourseMessages(courseId);
+            
+            document.getElementById('chat-header').innerHTML = `Chat: <strong>${course.title}</strong>`;
+            const body = document.getElementById('chat-body');
+            let html = '';
+            
+            messages.forEach(m => {
+                const isMe = m.sender_id === currentUser.id;
+                const senderName = isMe ? 'You' : m.sender.full_name;
+                html += `
+                    <div class="message ${isMe ? 'sent' : 'received'}">
+                        <div class="message-bubble">
+                            <strong>${senderName}:</strong>
+                            <p>${m.message_text}</p>
+                            <small>${new Date(m.created_at).toLocaleTimeString()}</small>
+                        </div>
                     </div>
-                </div>
-            `;
-        });
-        body.innerHTML = html;
-        body.scrollTop = body.scrollHeight;
+                `;
+            });
+            
+            body.innerHTML = html;
+            body.scrollTop = body.scrollHeight;
+            
+            // Update chat input to send to this course
+            const chatInput = document.querySelector('#chat-footer input');
+            const sendBtn = document.querySelector('#chat-footer button');
+            
+            sendBtn.onclick = async () => {
+                const messageText = chatInput.value.trim();
+                if (messageText) {
+                    try {
+                        await CourseService.sendCourseMessage(courseId, currentUser.id, messageText);
+                        chatInput.value = '';
+                        renderMessages(courseId); // Refresh messages
+                    } catch (error) {
+                        console.error('Error sending message:', error);
+                    }
+                }
+            };
+            
+        } catch (error) {
+            console.error('Error loading messages:', error);
+        }
     };
-    
+
     const renderEarnings = () => {
         const container = document.getElementById('earnings-container');
+        const balance = dashboardData.earnings?.balance || 0;
         let html = `
             <div class="earnings-summary">
                 <div>
                     <span>Available Balance</span>
-                    <strong class="rupee-value">${dashboardData.earnings.balance.toLocaleString()}</strong>
+                    <strong class="coin-value">${balance.toLocaleString()}</strong>
                 </div>
                 <button class="btn-primary" id="withdraw-earnings-btn-2">Withdraw Funds</button>
             </div>
@@ -182,12 +314,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     <thead><tr><th>Date</th><th>Description</th><th>Amount</th></tr></thead>
                     <tbody>
         `;
-        dashboardData.earnings.transactions.forEach(t => {
+        const transactions = dashboardData.earnings?.transactions || [];
+        transactions.forEach(t => {
             html += `
                 <tr>
-                    <td>${t.date}</td>
+                    <td>${new Date(t.created_at).toLocaleDateString()}</td>
                     <td>${t.description}</td>
-                    <td class="${t.type}"><span class="rupee-value">${Math.abs(t.amount).toLocaleString()}</span></td>
+                    <td class="${t.amount > 0 ? 'credit' : 'debit'}"><span class="coin-value">${Math.abs(t.amount).toLocaleString()}</span></td>
                 </tr>
             `;
         });
@@ -197,24 +330,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderProfileForm = () => {
         const container = document.getElementById('profile-form-container');
-        const { name, headline, bio, subjects } = dashboardData.mentorProfile;
+        const profile = dashboardData.mentorProfile;
         container.innerHTML = `
             <form class="profile-form">
                 <div class="form-group">
                     <label for="profileName">Full Name</label>
-                    <input type="text" id="profileName" value="${name}">
+                    <input type="text" id="profileName" value="${profile.name || ''}">
                 </div>
                 <div class="form-group">
                     <label for="profileHeadline">Headline</label>
-                    <input type="text" id="profileHeadline" value="${headline}">
+                    <input type="text" id="profileHeadline" value="${profile.headline || ''}">
                 </div>
                 <div class="form-group">
                     <label for="profileBio">Biography</label>
-                    <textarea id="profileBio" rows="5">${bio}</textarea>
+                    <textarea id="profileBio" rows="5">${profile.bio || ''}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="profileSubjects">Subjects (comma-separated)</label>
-                    <input type="text" id="profileSubjects" value="${subjects.join(', ')}">
+                    <input type="text" id="profileSubjects" value="${(profile.subjects || []).join(', ')}">
                 </div>
                 <div class="form-footer">
                     <button type="submit" class="btn-primary">Save Changes</button>
@@ -225,7 +358,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderSettingsForm = () => {
         const container = document.getElementById('settings-form-container');
-        const { notifications } = dashboardData.settings;
         container.innerHTML = `
             <form class="settings-form">
                 <div class="settings-section">
@@ -233,19 +365,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="form-group">
                         <div class="toggle-switch">
                             <label for="notifNewBookings">New Bookings</label>
-                            <input type="checkbox" id="notifNewBookings" ${notifications.newBookings ? 'checked' : ''}>
+                            <input type="checkbox" id="notifNewBookings" checked>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="toggle-switch">
                             <label for="notifCancellations">Cancellations</label>
-                            <input type="checkbox" id="notifCancellations" ${notifications.cancellations ? 'checked' : ''}>
+                            <input type="checkbox" id="notifCancellations" checked>
                         </div>
                     </div>
                      <div class="form-group">
                         <div class="toggle-switch">
                             <label for="notifNewMessage">New Messages</label>
-                            <input type="checkbox" id="notifNewMessage" ${notifications.newMessage ? 'checked' : ''}>
+                            <input type="checkbox" id="notifNewMessage" checked>
                         </div>
                     </div>
                 </div>
@@ -268,12 +400,19 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateBadges = () => {
-        const unreadMessages = dashboardData.conversations.reduce((sum, c) => sum + c.unread, 0);
+        // Count unread messages across all courses
+        let unreadMessages = 0;
+        (dashboardData.messages || []).forEach(msg => {
+            if (!msg.is_read && msg.sender_id !== currentUser.id) {
+                unreadMessages++;
+            }
+        });
+        
         const messageBadge = document.getElementById('message-badge');
         messageBadge.textContent = unreadMessages;
         messageBadge.style.display = unreadMessages > 0 ? 'inline-block' : 'none';
 
-        const unreadNotifications = dashboardData.notifications.filter(n => !n.read).length;
+        const unreadNotifications = (dashboardData.notifications || []).filter(n => !n.is_read).length;
         const notificationBadge = document.getElementById('notification-badge');
         notificationBadge.textContent = unreadNotifications;
         notificationBadge.style.display = unreadNotifications > 0 ? 'flex' : 'none';
@@ -284,13 +423,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = document.getElementById('earningsChart');
         if (!ctx) return;
 
+        // Mock chart data for now
+        const chartData = {
+            monthly: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                data: [3200, 4500, 2800, 5000]
+            },
+            biannual: {
+                labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+                data: [9600, 10500, 12500, 11000, 14000, 18250]
+            }
+        };
+
         const chartConfig = {
             type: 'line',
             data: {
-                labels: dashboardData.chartData[period].labels,
+                labels: chartData[period].labels,
                 datasets: [{
                     label: 'Earnings',
-                    data: dashboardData.chartData[period].data,
+                    data: chartData[period].data,
                     fill: true,
                     backgroundColor: 'rgba(147, 51, 234, 0.1)',
                     borderColor: 'rgba(147, 51, 234, 1)',
@@ -421,7 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (convItem) {
                 document.querySelectorAll('.conversation-item').forEach(item => item.classList.remove('active'));
                 convItem.classList.add('active');
-                renderMessages(convItem.dataset.convId);
+                renderMessages(convItem.dataset.convId); // This is now courseId
             }
         });
     };

@@ -1,5 +1,6 @@
 import { initAuth } from './auth.js';
-import { mentors, userProfile } from './data.js';
+import { CourseService } from './courseService.js';
+import { AuthService } from './authService.js';
 
 // Application State
 let currentView = 'grid';
@@ -12,31 +13,92 @@ let currentFilters = {
     sessionType: '1on1',
     groupSize: '2-5',
     features: [],
-    experience: 'professional'
+    difficulty: 'beginner'
 };
-let filteredMentors = [...mentors];
+let allCourses = [];
+let filteredCourses = [];
 let currentPage = 1;
-let mentorsPerPage = 8;
+let coursesPerPage = 8;
 let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+let currentUser = null;
+let userProfile = null;
 
 // DOM Elements (Global scope for functions)
-const mentorGrid = document.getElementById('mentorGrid');
+const courseGrid = document.getElementById('courseGrid');
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', initializeApp);
 
-function initializeApp() {
+async function initializeApp() {
+    await initAuth();
     setupEventListeners();
     
     // Page-specific initializations
-    if (mentorGrid) {
+    if (courseGrid) {
         setupFilters();
-        renderMentors();
+        await loadAndRenderCourses();
     }
     
-    initCoinDisplay();
+    await initCoinDisplay();
     setupScrollEffects();
-    initAuth(); // Initialize authentication modal logic
+    initAuthModal(); // Initialize authentication modal logic
+}
+
+// Initialize authentication
+async function initAuth() {
+    try {
+        currentUser = await AuthService.getCurrentUser();
+        if (currentUser) {
+            userProfile = await AuthService.getUserProfile();
+            updateUIForAuthenticatedUser();
+        }
+    } catch (error) {
+        console.error('Auth initialization error:', error);
+    }
+
+    // Listen for auth changes
+    AuthService.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN') {
+            currentUser = session.user;
+            userProfile = await AuthService.getUserProfile();
+            updateUIForAuthenticatedUser();
+        } else if (event === 'SIGNED_OUT') {
+            currentUser = null;
+            userProfile = null;
+            updateUIForUnauthenticatedUser();
+        }
+    });
+}
+
+function updateUIForAuthenticatedUser() {
+    const joinBtn = document.getElementById('join-btn');
+    const coinsDisplay = document.getElementById('coinsDisplay');
+    
+    if (joinBtn && userProfile) {
+        joinBtn.textContent = userProfile.full_name || 'Profile';
+        joinBtn.onclick = () => {
+            if (userProfile.role === 'mentor') {
+                window.location.href = '/dashboard.html';
+            } else {
+                window.location.href = '/my-sessions.html';
+            }
+        };
+    }
+    
+    if (coinsDisplay && userProfile) {
+        const coinBalance = coinsDisplay.querySelector('.coin-balance');
+        if (coinBalance) {
+            coinBalance.textContent = (userProfile.excel_coin_balance || 0).toLocaleString();
+        }
+    }
+}
+
+function updateUIForUnauthenticatedUser() {
+    const joinBtn = document.getElementById('join-btn');
+    if (joinBtn) {
+        joinBtn.textContent = 'Join StudyBuddy';
+        joinBtn.onclick = () => showAuthModal();
+    }
 }
 
 // Event Listeners Setup
@@ -77,6 +139,17 @@ function setupEventListeners() {
     minPriceInput?.addEventListener('input', handlePriceChange);
     maxPriceInput?.addEventListener('input', handlePriceChange);
     priceSlider?.addEventListener('input', handlePriceSliderChange);
+}
+
+// Load and render courses
+async function loadAndRenderCourses() {
+    try {
+        allCourses = await CourseService.getAllCourses();
+        applyFilters();
+    } catch (error) {
+        console.error('Error loading courses:', error);
+        renderEmptyState();
+    }
 }
 
 // Mobile Menu Functions
@@ -151,7 +224,7 @@ function handleTimeSlotChange(clickedBtn) {
 function handleExperienceChange(clickedBtn) {
     document.querySelectorAll('.experience-btn').forEach(btn => btn.classList.remove('active'));
     clickedBtn.classList.add('active');
-    currentFilters.experience = clickedBtn.textContent.toLowerCase();
+    currentFilters.difficulty = clickedBtn.textContent.toLowerCase();
     applyFilters();
 }
 
@@ -262,23 +335,25 @@ function handleSearch() {
     const searchInput = document.getElementById('searchInput');
     if (!searchInput) return;
     const query = searchInput.value.toLowerCase().trim();
-    applyFilters(query);
+    currentFilters.search = query;
+    applyFilters();
 }
 
-function handleSort() {
+async function handleSort() {
     const sortSelect = document.getElementById('sortSelect');
     if (!sortSelect) return;
     const sortBy = sortSelect.value;
-    sortMentors(sortBy);
-    renderMentors();
+    await sortCourses(sortBy);
+    renderCourses();
 }
 
-function sortMentors(sortBy) {
+async function sortCourses(sortBy) {
     switch (sortBy) {
-        case 'rating': filteredMentors.sort((a, b) => b.rating - a.rating); break;
-        case 'priceLow': filteredMentors.sort((a, b) => a.price - b.price); break;
-        case 'priceHigh': filteredMentors.sort((a, b) => b.price - a.price); break;
-        case 'popular': filteredMentors.sort((a, b) => b.reviewsCount - a.reviewsCount); break;
+        case 'rating': filteredCourses.sort((a, b) => b.average_rating - a.average_rating); break;
+        case 'priceLow': filteredCourses.sort((a, b) => a.price_per_session - b.price_per_session); break;
+        case 'priceHigh': filteredCourses.sort((a, b) => b.price_per_session - a.price_per_session); break;
+        case 'popular': filteredCourses.sort((a, b) => b.enrollment_count - a.enrollment_count); break;
+        case 'newest': filteredCourses.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); break;
         default: break;
     }
 }
@@ -290,111 +365,137 @@ function handleViewToggle(view) {
         if (btn.dataset.view === view) btn.classList.add('active');
     });
     
-    if (mentorGrid) {
-        mentorGrid.style.gridTemplateColumns = (view === 'list') ? '1fr' : 'repeat(auto-fill, minmax(320px, 1fr))';
+    if (courseGrid) {
+        courseGrid.style.gridTemplateColumns = (view === 'list') ? '1fr' : 'repeat(auto-fill, minmax(320px, 1fr))';
     }
-    renderMentors();
+    renderCourses();
 }
 
 // Filter Application
-function applyFilters(searchQuery = '') {
-    filteredMentors = mentors.filter(mentor => {
-        if (searchQuery && !mentor.name.toLowerCase().includes(searchQuery) && 
-            !mentor.headline.toLowerCase().includes(searchQuery) &&
-            !mentor.subjects.some(subject => subject.toLowerCase().includes(searchQuery))) {
+async function applyFilters() {
+    filteredCourses = allCourses.filter(course => {
+        // Search filter
+        if (currentFilters.search && 
+            !course.title.toLowerCase().includes(currentFilters.search) && 
+            !course.description.toLowerCase().includes(currentFilters.search) &&
+            !course.subject.toLowerCase().includes(currentFilters.search)) {
             return false;
         }
-        if (mentor.price < currentFilters.priceRange.min || mentor.price > currentFilters.priceRange.max) {
+        
+        // Price filter
+        if (course.price_per_session < currentFilters.priceRange.min || 
+            course.price_per_session > currentFilters.priceRange.max) {
             return false;
         }
-        if (currentFilters.languages.length > 0 && !currentFilters.languages.some(lang => mentor.languages.some(mentorLang => mentorLang.includes(lang === 'english' ? '🇺🇸' : '🇮🇳')))) {
+        
+        // Language filter (based on course language)
+        if (currentFilters.languages.length > 0 && 
+            !currentFilters.languages.includes(course.language.toLowerCase())) {
             return false;
         }
-        if (currentFilters.experience && mentor.experience.toLowerCase() !== currentFilters.experience) {
+        
+        // Difficulty filter
+        if (currentFilters.difficulty && 
+            course.difficulty_level !== currentFilters.difficulty) {
             return false;
         }
-        if (currentFilters.features.length > 0 && !currentFilters.features.some(feature => mentor.features.includes(feature))) {
+        
+        // Subject filter
+        if (currentFilters.subjects.length > 0 && 
+            !currentFilters.subjects.includes(course.subject.toLowerCase())) {
             return false;
         }
+        
         return true;
     });
     
     currentPage = 1;
-    const sortSelect = document.getElementById('sortSelect');
-    sortMentors(sortSelect?.value || 'relevance');
-    renderMentors();
+    await sortCourses(document.getElementById('sortSelect')?.value || 'relevance');
+    renderCourses();
     updateResultsCount();
 }
 
 function updateResultsCount() {
     const resultsCount = document.querySelector('.results-count');
     if (resultsCount) {
-        resultsCount.textContent = `Showing ${Math.min(filteredMentors.length, mentorsPerPage * currentPage)} of ${filteredMentors.length} mentors`;
+        resultsCount.textContent = `Showing ${Math.min(filteredCourses.length, coursesPerPage * currentPage)} of ${filteredCourses.length} courses`;
     }
 }
 
-// Mentor Rendering
-function renderMentors() {
-    if (!mentorGrid) return;
+// Course Rendering
+function renderCourses() {
+    if (!courseGrid) return;
     
-    const startIndex = (currentPage - 1) * mentorsPerPage;
-    const endIndex = startIndex + mentorsPerPage;
-    const mentorsToShow = filteredMentors.slice(0, endIndex);
+    const startIndex = (currentPage - 1) * coursesPerPage;
+    const endIndex = startIndex + coursesPerPage;
+    const coursesToShow = filteredCourses.slice(0, endIndex);
     
-    mentorGrid.innerHTML = '';
+    courseGrid.innerHTML = '';
     
-    if (mentorsToShow.length === 0) {
+    if (coursesToShow.length === 0) {
         renderEmptyState();
         return;
     }
     
-    mentorsToShow.forEach(mentor => {
-        const mentorCard = createMentorCard(mentor);
-        mentorGrid.appendChild(mentorCard);
+    coursesToShow.forEach(course => {
+        const courseCard = createCourseCard(course);
+        courseGrid.appendChild(courseCard);
     });
     
     updateLoadMoreButton();
     
-    const newCards = mentorGrid.querySelectorAll('.mentor-card:not(.fade-in)');
+    const newCards = courseGrid.querySelectorAll('.course-card:not(.fade-in)');
     newCards.forEach((card, index) => {
         setTimeout(() => card.classList.add('fade-in'), index * 100);
     });
 }
 
-function createMentorCard(mentor) {
+function createCourseCard(course) {
     const card = document.createElement('div');
-    card.className = 'mentor-card';
-    card.dataset.mentorId = mentor.id;
-    const isFavorited = favorites.includes(mentor.id);
+    card.className = 'course-card';
+    card.dataset.courseId = course.id;
+    const isFavorited = favorites.includes(course.id);
     
     card.innerHTML = `
-        <div class="mentor-header">
-            <div class="mentor-avatar">
-                <img src="${mentor.avatar}" alt="${mentor.name}" onerror="this.src='https://via.placeholder.com/80x80/9333ea/ffffff?text=${mentor.name.charAt(0)}'">
-                ${mentor.verified ? '<div class="verified-badge"><i class="fas fa-check"></i></div>' : ''}
+        <div class="course-header">
+            <div class="course-image">
+                <img src="${course.course_image_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=320&h=180&fit=crop'}" alt="${course.title}">
+                <div class="difficulty-badge ${course.difficulty_level}">${course.difficulty_level}</div>
             </div>
-            <div class="mentor-info">
-                <h3 class="mentor-name">${mentor.name}</h3>
-                <p class="mentor-headline">${mentor.headline}</p>
-                <div class="mentor-rating">
-                    <div class="stars">${generateStars(mentor.rating)}</div>
-                    <span class="rating-text">${mentor.rating} (${mentor.reviewsCount} reviews)</span>
+        </div>
+        <div class="course-content">
+            <div class="course-info">
+                <h3 class="course-title">${course.title}</h3>
+                <p class="course-description">${course.short_description || course.description.substring(0, 100) + '...'}</p>
+                <div class="course-meta">
+                    <span class="course-subject">${course.subject}</span>
+                    <span class="course-duration">${course.duration_minutes}min</span>
+                    <span class="course-sessions">${course.total_sessions} sessions</span>
                 </div>
             </div>
-        </div>
-        <div class="price-section">
-            <div class="coin-price"><i class="fas fa-coins"></i><span>${mentor.price.toLocaleString()}/hr</span></div>
-            ${mentor.available ? `<div class="availability-indicator"><span class="availability-dot"></span>Available Now</div>` : ''}
-        </div>
-        <div class="subject-tags">${mentor.subjects.slice(0, 3).map(subject => `<span class="subject-tag">${subject}</span>`).join('')}</div>
-        <div class="mentor-actions">
-            <button class="preview-btn">Preview Profile</button>
-            <button class="favorite-btn ${isFavorited ? 'favorited' : ''}"><i class="fas fa-heart"></i></button>
+            <div class="mentor-info">
+                <img src="${course.mentor.avatar_url || 'https://via.placeholder.com/32x32'}" alt="${course.mentor.full_name}" class="mentor-avatar-small">
+                <span class="mentor-name">${course.mentor.full_name}</span>
+            </div>
+            <div class="course-stats">
+                <div class="course-rating">
+                    <div class="stars">${generateStars(course.average_rating || 0)}</div>
+                    <span class="rating-text">${course.average_rating || 0} (${course.total_reviews || 0})</span>
+                </div>
+                <div class="enrollment-count">${course.enrollment_count || 0} enrolled</div>
+            </div>
+            <div class="price-section">
+                <div class="coin-price"><i class="fas fa-coins"></i><span>${course.price_per_session.toLocaleString()}/session</span></div>
+            </div>
+            <div class="course-actions">
+                <button class="preview-btn">View Course</button>
+                <button class="favorite-btn ${isFavorited ? 'favorited' : ''}"><i class="fas fa-heart"></i></button>
+            </div>
         </div>
     `;
     
-    card.querySelector('.preview-btn')?.addEventListener('click', () => previewMentor(mentor.id));
-    card.querySelector('.favorite-btn')?.addEventListener('click', (e) => toggleFavorite(mentor.id, e.currentTarget));
+    card.querySelector('.preview-btn')?.addEventListener('click', () => previewCourse(course.id));
+    card.querySelector('.favorite-btn')?.addEventListener('click', (e) => toggleFavorite(course.id, e.currentTarget));
 
     return card;
 }
@@ -410,12 +511,12 @@ function generateStars(rating) {
 }
 
 function renderEmptyState() {
-    if (!mentorGrid) return;
-    mentorGrid.innerHTML = `
+    if (!courseGrid) return;
+    courseGrid.innerHTML = `
         <div class="empty-state">
             <i class="fas fa-search"></i>
-            <h3>No mentors found</h3>
-            <p>Try adjusting your filters or search terms to find more mentors.</p>
+            <h3>No courses found</h3>
+            <p>Try adjusting your filters or search terms to find more courses.</p>
         </div>
     `;
 }
@@ -423,35 +524,35 @@ function renderEmptyState() {
 function updateLoadMoreButton() {
     const loadMoreBtn = document.getElementById('loadMoreBtn');
     if (!loadMoreBtn) return;
-    const hasMore = filteredMentors.length > currentPage * mentorsPerPage;
+    const hasMore = filteredCourses.length > currentPage * coursesPerPage;
     loadMoreBtn.style.display = hasMore ? 'block' : 'none';
 }
 
-function loadMoreMentors() {
+function loadMoreCourses() {
     currentPage++;
-    renderMentors();
+    renderCourses();
     updateResultsCount();
 }
 
 // Favorite Functions
-function toggleFavorite(mentorId, btnElement) {
-    const index = favorites.indexOf(mentorId);
+function toggleFavorite(courseId, btnElement) {
+    const index = favorites.indexOf(courseId);
     if (index > -1) {
         favorites.splice(index, 1);
     } else {
-        favorites.push(mentorId);
+        favorites.push(courseId);
     }
     localStorage.setItem('favorites', JSON.stringify(favorites));
     btnElement?.classList.toggle('favorited');
 }
 
-// Mentor Preview
-function previewMentor(mentorId) {
-    window.location.href = `mentor-profile.html?id=${mentorId}`;
+// Course Preview
+function previewCourse(courseId) {
+    window.location.href = `course-detail.html?id=${courseId}`;
 }
 
 // Coins Management
-function initCoinDisplay() {
+async function initCoinDisplay() {
     const coinsDisplay = document.getElementById('coinsDisplay');
     if (!coinsDisplay) return;
 
@@ -462,7 +563,7 @@ function initCoinDisplay() {
     coinsDisplay.appendChild(popover);
 
     // Populate and style the display
-    updateCoinsDisplay();
+    await updateCoinsDisplay();
 
     // Add event listeners for hover
     coinsDisplay.addEventListener('mouseenter', () => {
@@ -474,11 +575,15 @@ function initCoinDisplay() {
     });
 }
 
-function updateCoinsDisplay() {
+async function updateCoinsDisplay() {
     const coinsDisplay = document.getElementById('coinsDisplay');
     if (!coinsDisplay) return;
     
-    const currentBalance = userProfile.coinBalance;
+    let currentBalance = 0;
+    if (userProfile) {
+        currentBalance = userProfile.excel_coin_balance || 0;
+    }
+    
     const coinBalanceEl = coinsDisplay.querySelector('.coin-balance');
     if (coinBalanceEl) coinBalanceEl.textContent = `${currentBalance.toLocaleString()}`;
     
@@ -490,28 +595,45 @@ function updateCoinsDisplay() {
     }
 }
 
-function populateCoinPopover() {
+async function populateCoinPopover() {
     const popover = document.getElementById('coin-popover');
     if (!popover) return;
 
+    // Get recent transactions
+    let recentTransactions = [];
+    if (currentUser) {
+        try {
+            const { data } = await supabase
+                .from('transactions')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false })
+                .limit(5);
+            recentTransactions = data || [];
+        } catch (error) {
+            console.error('Error fetching transactions:', error);
+        }
+    }
+
     const icons = {
-        purchase: { class: 'purchase', icon: 'fa-plus' },
-        payment: { class: 'payment', icon: 'fa-minus' },
+        coin_purchase: { class: 'purchase', icon: 'fa-plus' },
+        course_enrollment: { class: 'payment', icon: 'fa-minus' },
         refund: { class: 'refund', icon: 'fa-undo' },
         bonus: { class: 'bonus', icon: 'fa-star' }
     };
 
-    const transactionsHTML = userProfile.recentTransactions.map(t => {
-        const typeInfo = icons[t.type];
+    const transactionsHTML = recentTransactions.map(t => {
+        const typeInfo = icons[t.transaction_type] || { class: 'other', icon: 'fa-circle' };
         const amountClass = t.amount > 0 ? 'credit' : 'debit';
         const amountPrefix = t.amount > 0 ? '+' : '';
+        const date = new Date(t.created_at).toLocaleDateString();
         return `
             <li class="transaction-item">
                 <div class="transaction-details">
                     <div class="transaction-icon ${typeInfo.class}"><i class="fas ${typeInfo.icon}"></i></div>
                     <div class="transaction-info">
                         <p>${t.description}</p>
-                        <small>${t.date}</small>
+                        <small>${date}</small>
                     </div>
                 </div>
                 <span class="transaction-amount ${amountClass}">${amountPrefix}${t.amount.toLocaleString()}</span>
@@ -523,7 +645,7 @@ function populateCoinPopover() {
         <div class="popover-header">Recent Activity</div>
         <div class="popover-body">
             <ul class="transaction-list">
-                ${transactionsHTML}
+                ${transactionsHTML || '<li>No recent transactions</li>'}
             </ul>
         </div>
         <div class="popover-footer">
@@ -533,6 +655,126 @@ function populateCoinPopover() {
     `;
 }
 
+// Authentication Modal
+function showAuthModal() {
+    const authModal = document.getElementById('auth-modal-overlay');
+    if (authModal) {
+        authModal.classList.remove('is-hidden');
+    }
+}
+
+function hideAuthModal() {
+    const authModal = document.getElementById('auth-modal-overlay');
+    if (authModal) {
+        authModal.classList.add('is-hidden');
+    }
+}
+
+// Initialize auth modal (renamed from initAuth to avoid confusion)
+function initAuthModal() {
+    const joinBtn = document.getElementById('join-btn');
+    const authModalOverlay = document.getElementById('auth-modal-overlay');
+
+    // If core auth elements don't exist, do nothing.
+    if (!joinBtn || !authModalOverlay) {
+        return;
+    }
+
+    const closeModalBtn = document.getElementById('auth-modal-close-btn');
+    const tabBtns = document.querySelectorAll('.auth-tab-btn');
+    const modalBodies = document.querySelectorAll('.auth-modal-body');
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const googleLoginBtn = document.getElementById('google-login-btn');
+    const togglePasswordBtns = document.querySelectorAll('.toggle-password');
+
+    // --- Modal Visibility ---
+    const showModal = () => authModalOverlay.classList.remove('is-hidden');
+    const hideModal = () => authModalOverlay.classList.add('is-hidden');
+
+    if (!currentUser) {
+        joinBtn.addEventListener('click', showModal);
+    }
+    closeModalBtn?.addEventListener('click', hideModal);
+    authModalOverlay.addEventListener('click', (e) => {
+        if (e.target === authModalOverlay) {
+            hideModal();
+        }
+    });
+
+    // --- Tab Switching ---
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.dataset.tab;
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            modalBodies.forEach(body => body.classList.remove('active'));
+            document.getElementById(`${tab}-body`)?.classList.add('active');
+        });
+    });
+
+    // --- Password Visibility Toggle ---
+    togglePasswordBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const input = btn.previousElementSibling;
+            if (input) {
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                input.setAttribute('type', type);
+                btn.classList.toggle('fa-eye');
+                btn.classList.toggle('fa-eye-slash');
+            }
+        });
+    });
+
+    // --- Login Logic ---
+    loginForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const emailInput = document.getElementById('login-email');
+        const passwordInput = document.getElementById('login-password');
+        const email = emailInput.value;
+        const password = passwordInput.value;
+
+        try {
+            await AuthService.signIn(email, password);
+            hideModal();
+            // UI will update via auth state change listener
+        } catch (error) {
+            showFormError(passwordInput, error.message);
+        }
+    });
+
+    // --- Signup Logic ---
+    signupForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('signup-email')?.value;
+        const password = document.getElementById('signup-password')?.value;
+        const fullName = document.getElementById('signup-name')?.value;
+        const username = document.getElementById('signup-username')?.value;
+
+        try {
+            await AuthService.signUp(email, password, {
+                full_name: fullName,
+                username: username,
+                role: 'student' // Default to student
+            });
+            hideModal();
+            // Show success message or redirect
+        } catch (error) {
+            alert('Signup Error: ' + error.message);
+        }
+    });
+
+    // Utility functions for form validation
+    function showFormError(input, message) {
+        if (!input) return;
+        const formGroup = input.parentElement.closest('.form-group');
+        if (!formGroup) return;
+        formGroup.classList.add('error');
+        const errorEl = formGroup.querySelector('.error-message');
+        if (errorEl) errorEl.textContent = message;
+    }
+}
 
 // Utility Functions
 function debounce(func, wait) {
@@ -562,8 +804,150 @@ function setupScrollEffects() {
 // Add CSS for fade-in animation
 const style = document.createElement('style');
 style.textContent = `
-    .mentor-card { opacity: 0; transform: translateY(20px); transition: all 0.5s ease; }
-    .mentor-card.fade-in { opacity: 1; transform: translateY(0); }
+    .course-card { 
+        opacity: 0; 
+        transform: translateY(20px); 
+        transition: all 0.5s ease;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 0;
+        border: 1px solid rgba(147, 51, 234, 0.1);
+        box-shadow: 0 4px 20px rgba(147, 51, 234, 0.1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    .course-card.fade-in { opacity: 1; transform: translateY(0); }
+    .course-card:hover { 
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(147, 51, 234, 0.2);
+    }
+    .course-header { position: relative; }
+    .course-image { 
+        width: 100%; 
+        height: 180px; 
+        overflow: hidden;
+        position: relative;
+    }
+    .course-image img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
+    }
+    .difficulty-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: capitalize;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+    }
+    .difficulty-badge.beginner { color: #16a34a; }
+    .difficulty-badge.intermediate { color: #f59e0b; }
+    .difficulty-badge.advanced { color: #dc2626; }
+    .course-content { 
+        padding: 20px; 
+        display: flex; 
+        flex-direction: column; 
+        flex-grow: 1;
+    }
+    .course-title { 
+        font-size: 18px; 
+        font-weight: 600; 
+        margin-bottom: 8px; 
+        color: #1e293b;
+    }
+    .course-description { 
+        color: #64748b; 
+        font-size: 14px; 
+        margin-bottom: 12px; 
+        line-height: 1.5;
+    }
+    .course-meta { 
+        display: flex; 
+        gap: 12px; 
+        margin-bottom: 12px; 
+        font-size: 12px; 
+        color: #64748b;
+    }
+    .mentor-info { 
+        display: flex; 
+        align-items: center; 
+        gap: 8px; 
+        margin-bottom: 12px;
+    }
+    .mentor-avatar-small { 
+        width: 32px; 
+        height: 32px; 
+        border-radius: 50%; 
+        object-fit: cover;
+    }
+    .mentor-name { 
+        font-size: 14px; 
+        font-weight: 500; 
+        color: #475569;
+    }
+    .course-stats { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-bottom: 16px;
+    }
+    .course-rating { 
+        display: flex; 
+        align-items: center; 
+        gap: 8px;
+    }
+    .enrollment-count { 
+        font-size: 12px; 
+        color: #64748b;
+    }
+    .price-section { 
+        margin-bottom: 16px;
+    }
+    .coin-price { 
+        font-size: 20px; 
+        font-weight: 700; 
+        color: #9333ea; 
+        display: flex; 
+        align-items: center; 
+        gap: 6px;
+    }
+    .coin-price i { color: #f59e0b; }
+    .course-actions { 
+        display: flex; 
+        gap: 12px; 
+        margin-top: auto;
+    }
+    .preview-btn { 
+        flex: 1; 
+        background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%); 
+        color: white; 
+        border: none; 
+        padding: 12px 20px; 
+        border-radius: 12px; 
+        font-weight: 600; 
+        cursor: pointer; 
+        transition: all 0.3s ease;
+    }
+    .preview-btn:hover { 
+        transform: translateY(-2px); 
+        box-shadow: 0 8px 25px rgba(147, 51, 234, 0.4);
+    }
     .favorite-btn.favorited { background: #9333ea !important; color: white !important; border-color: #9333ea !important; }
+    .course-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+        gap: 24px; 
+        margin-bottom: 40px;
+    }
 `;
 document.head.appendChild(style);
+
+// Update load more button event listener
+document.getElementById('loadMoreBtn')?.addEventListener('click', loadMoreCourses);
